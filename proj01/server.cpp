@@ -18,7 +18,7 @@ Server::Server() {
 	serv_addr.sin_addr.s_addr = INADDR_ANY;
 	serv_addr.sin_port = htons(5001);
 	time_img = time(NULL);
-	price = 0.7;
+	price = rand_price();
 }
 
 //Creates socket and binds it to server address
@@ -40,6 +40,10 @@ void Server::gen_price(int sock) {
 	if (time_img == time(NULL))
 		return;
 	time_img = time(NULL);
+	
+	if (!(time_img % 10))
+		price = rand_price();
+	
 	int n;
 	bzero(buffer, 256);
 	sprintf(buffer, "$%.1f %s", price, ctime(&time_img));
@@ -53,4 +57,9 @@ void Server::gen_price(int sock) {
 
 void Server::process_buy_request(int sock) {
 	
+}
+
+//Generates rand double from 0.0 to 9.9
+double Server::rand_price() {
+	return rand() % 100 / 10.0;
 }

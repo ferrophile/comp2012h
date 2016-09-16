@@ -10,6 +10,7 @@ class Server {
 		void gen_price(int sock);
 		void process_buy_request(int sock);
 	private:
+		double rand_price();
 		struct sockaddr_in serv_addr;
 		char buffer[256];
 		time_t time_img;
