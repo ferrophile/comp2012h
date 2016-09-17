@@ -17,8 +17,14 @@ Server::Server() {
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = INADDR_ANY;
 	serv_addr.sin_port = htons(5001);
+	srand (time(NULL));
 	time_img = time(NULL);
-	price = rand_price();
+	
+	price = static_cast<double*>(mmap(NULL, sizeof *price, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0));
+	update_flag = static_cast<int*>(mmap(NULL, sizeof *update_flag, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0));
+	
+	*price = rand_price();
+	*update_flag = 0;
 }
 
 //Creates socket and binds it to server address
@@ -41,12 +47,18 @@ void Server::gen_price(int sock) {
 		return;
 	time_img = time(NULL);
 	
-	if (!(time_img % 10))
-		price = rand_price();
+	if (!(time_img % 10)) {
+		if (!*update_flag) {
+			*price = rand_price();
+			*update_flag = 1;
+		}
+	} else {
+		*update_flag = 0;
+	}
 	
 	int n;
 	bzero(buffer, 256);
-	sprintf(buffer, "$%.1f %s", price, ctime(&time_img));
+	sprintf(buffer, "$%.1f %s", *price, ctime(&time_img));
 	printf("%s", buffer);
 	n = write(sock, buffer, strlen(buffer));
 	if (n < 0) {

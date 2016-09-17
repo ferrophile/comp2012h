@@ -1,7 +1,7 @@
 #ifndef PROJ1_H 
 #define PROJ1_H
 
-/* TODO: Server and Client classes */
+//static double *price;
 
 class Server {
 	public:
@@ -14,7 +14,8 @@ class Server {
 		struct sockaddr_in serv_addr;
 		char buffer[256];
 		time_t time_img;
-		double price;
+		double *price;
+		int *update_flag;
 };
 
 class Client {
