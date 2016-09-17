@@ -36,7 +36,7 @@ class Client {
 		struct hostent *server;
 		char buffer[256];
 		time_t time_img;
-		char *price;
+		char *price, *price_buy, *time_buy;
 };
 
 #endif

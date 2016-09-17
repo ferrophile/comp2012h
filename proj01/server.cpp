@@ -51,7 +51,7 @@ void Server::gen_price(int sock) {
 		*price = rand_price();
 	
 	bzero(buffer, 256);
-	sprintf(buffer, "$%.1f ", *price);
+	sprintf(buffer, "$%.1f", *price);
 	send_message(MSG_PRICE, buffer, sock);
 	
 	bzero(buffer, 256);
@@ -63,25 +63,20 @@ void Server::gen_price(int sock) {
 void Server::process_buy_request(int sock) {
 	int n;
 	bzero(buffer, 256);
-	n = read(sock, buffer, 255);
+	n = read(sock, buffer, 5); //need to dynamically read length as well
 	if (n < 0) {
 		perror("ERROR reading from socket");
 		exit(1);
 	}
 	if (strlen(buffer)) {
+		sleep(1); //simulate processing time
+		
 		++*count;
 		printf("no of attempts: %d\n", *count);
 		
-		/*
 		bzero(buffer, 256);
-		sprintf(buffer, "$%.1f ", *price);
-		printf("%s", buffer);
-		n = write(sock, buffer, strlen(buffer));
-		if (n < 0) {
-			perror("ERROR writing to socket");
-			exit(0);
-		}
-		*/
+		sprintf(buffer, "$%.1f", *price);
+		send_message(MSG_REPLY, buffer, sock);
 	}
 	//else lost connection with client
 }

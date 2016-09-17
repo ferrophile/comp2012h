@@ -33,18 +33,30 @@ Client::Client(char *hostname, int portno) {
 	
 	bzero(buffer, 256);
 	price = (char *)mmap(NULL, sizeof *price, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+	price_buy = (char *)mmap(NULL, sizeof *price_buy, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+	time_buy = (char *)mmap(NULL, sizeof *time_buy, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 	bzero(price, 10);
+	bzero(price_buy, 10);
+	bzero(time_buy, 30);
 }
 
 void Client::get_price() {
 	char id = read_message(buffer, sockfd);
+	time_t time_img = time(NULL);
 	switch (id) {
 		case MSG_PRICE:
-			printf("%s", buffer);
+			printf("%s ", buffer);
 			strcpy(price, buffer);
 			break;
 		case MSG_TIME:
 			printf("%s", buffer);
+			break;
+		case MSG_REPLY:
+			//printf("Cli: %s, Ser: %s\n", price_buy, buffer);
+			printf("client buy  at %s at %s", price_buy, time_buy);
+			printf("server sell at %s at %s", price, ctime(&time_img));
+			printf("all times approx\n");
+			printf("buy %s from server!\n", (strcmp(price, price_buy) ? "FAILED" : "SUCCESSFUL"));
 			break;
 	}
 }
@@ -54,22 +66,14 @@ void Client::gen_buy_request() {
 	char c = getchar();
 	if ((int)c == 10) {
 		time_t time_img = time(NULL);
-		printf("from client: client buy at %sat %s", price, ctime(&time_img));
+		printf("from client: client buy at %s at %s", price, ctime(&time_img));
+		strcpy(price_buy, price);
+		strcpy(time_buy, ctime(&time_img));
 		n = write(sockfd, price, strlen(price));
 		if (n < 0) {
 			perror("ERROR writing to socket");
 			exit(0);
 		}
-		
-		/*
-		bzero(buffer, 256);
-		n = read(sockfd, buffer, 255);
-		if (n < 0) {
-			perror("ERROR reading from socket");
-			exit(1);
-		}
-		printf("%d, %d", strlen(price), strlen(buffer));
-		*/
 	}
 }
 
@@ -84,12 +88,5 @@ MSG_ID Client::read_message(char *body, int sockfd) {
 		perror("ERROR reading from socket");
 		exit(1);
 	}
-	/*
-	for (int i = 0; i < strlen(body); i++) {
-		printf("%d ", (int)body[i]);
-	}
-	printf("\n");
-	*/
-	//printf("%d %d ", (int)id, strlen(body));
 	return (MSG_ID)id;
 }
