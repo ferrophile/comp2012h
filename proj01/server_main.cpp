@@ -28,13 +28,11 @@ int main( int argc, char *argv[] ) {
        while (1) 
          server.gen_price (newsockfd);
      }
-	 /*
      ppid = safefork();
      if (ppid == 0) {
        while (1) 
          server.process_buy_request(newsockfd);
      }
-	 */
    }
    return 0;
 }

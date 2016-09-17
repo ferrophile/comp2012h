@@ -58,7 +58,16 @@ void Server::gen_price(int sock) {
 	
 	int n;
 	bzero(buffer, 256);
-	sprintf(buffer, "$%.1f %s", *price, ctime(&time_img));
+	sprintf(buffer, "$%.1f ", *price);
+	printf("%s", buffer);
+	n = write(sock, buffer, strlen(buffer));
+	if (n < 0) {
+		perror("ERROR writing to socket");
+		exit(0);
+	}
+	
+	bzero(buffer, 256);
+	sprintf(buffer, "%s", ctime(&time_img));
 	printf("%s", buffer);
 	n = write(sock, buffer, strlen(buffer));
 	if (n < 0) {
