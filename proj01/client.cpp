@@ -37,29 +37,48 @@ Client::Client(char *hostname, int portno) {
 }
 
 void Client::get_price() {
-	int n;
-	bzero(buffer, 256);
-	n = read(sockfd, buffer, 255);
-	if (n < 0) {
-		perror("ERROR reading from socket");
-		exit(1);
+	char id = read_message(buffer, sockfd);
+	if (id == 1) {
+		printf("%s", buffer);
+		strcpy(price, buffer);
 	}
-	printf("%s", buffer);
-	strcpy(price, buffer);
-	
-	bzero(buffer, 256);
-	n = read(sockfd, buffer, 255);
-	if (n < 0) {
-		perror("ERROR reading from socket");
-		exit(1);
-	}
-	printf("%s", buffer);
+	if (id == 2)
+		printf("%s", buffer);
 }
 
 void Client::gen_buy_request() {
+	int n;
 	char c = getchar();
 	if ((int)c == 10) {
 		time_t time_img = time(NULL);
 		printf("from client: client buy at %sat %s", price, ctime(&time_img));
+		n = write(sockfd, price, strlen(price));
+		if (n < 0) {
+			perror("ERROR writing to socket");
+			exit(0);
+		}
+		
+		/*
+		bzero(buffer, 256);
+		n = read(sockfd, buffer, 255);
+		if (n < 0) {
+			perror("ERROR reading from socket");
+			exit(1);
+		}
+		printf("%d, %d", strlen(price), strlen(buffer));
+		*/
 	}
+}
+
+char Client::read_message(char *body, int sockfd) {
+	int n;
+	char id;
+	n = read(sockfd, &id, 1);
+	bzero(buffer, 256);
+	n = read(sockfd, body, 255);
+	if (n < 0) {
+		perror("ERROR reading from socket");
+		exit(1);
+	}
+	return id;
 }
