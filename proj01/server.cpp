@@ -20,12 +20,10 @@ Server::Server() {
 	srand (time(NULL));
 	time_img = time(NULL);
 	
-	price = static_cast<double*>(mmap(NULL, sizeof *price, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0));
-	update_flag = static_cast<int*>(mmap(NULL, sizeof *update_flag, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0));
-	count = static_cast<int*>(mmap(NULL, sizeof *update_flag, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0));
+	price = (double *)mmap(NULL, sizeof *price, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+	count = (int *)mmap(NULL, sizeof *count, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 	
 	*price = rand_price();
-	*update_flag = 0;
 	*count = 0;
 }
 
@@ -49,22 +47,16 @@ void Server::gen_price(int sock) {
 		return;
 	time_img = time(NULL);
 	
-	if (!(time_img % 10)) {
-		if (!*update_flag) {
-			*price = rand_price();
-			*update_flag = 1;
-		}
-	} else {
-		*update_flag = 0;
-	}
+	if (!(time_img % 10))
+		*price = rand_price();
 	
 	bzero(buffer, 256);
 	sprintf(buffer, "$%.1f ", *price);
-	send_message((char)1, buffer, sock);
+	send_message(MSG_PRICE, buffer, sock);
 	
 	bzero(buffer, 256);
 	sprintf(buffer, "%s", ctime(&time_img));
-	send_message((char)2, buffer, sock);	
+	send_message(MSG_TIME, buffer, sock);	
 	printf("$%.1f %s", *price, ctime(&time_img));
 }
 
@@ -99,9 +91,11 @@ double Server::rand_price() {
 	return rand() % 100 / 10.0;
 }
 
-void Server::send_message(char id, char* body, int sock){
+void Server::send_message(MSG_ID id, char* body, int sock){
 	int n;
-	n = write(sock, &id, 1);
+	char len = (char)strlen(buffer);
+	n = write(sock, (char *)&id, 1);
+	n = write(sock, &len, 1);
 	n = write(sock, buffer, strlen(buffer));
 	if (n < 0) {
 		perror("ERROR writing to socket");

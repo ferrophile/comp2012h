@@ -32,18 +32,21 @@ Client::Client(char *hostname, int portno) {
 	}
 	
 	bzero(buffer, 256);
-	price = static_cast<char*>(mmap(NULL, sizeof *price, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0));
+	price = (char *)mmap(NULL, sizeof *price, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 	bzero(price, 10);
 }
 
 void Client::get_price() {
 	char id = read_message(buffer, sockfd);
-	if (id == 1) {
-		printf("%s", buffer);
-		strcpy(price, buffer);
+	switch (id) {
+		case MSG_PRICE:
+			printf("%s", buffer);
+			strcpy(price, buffer);
+			break;
+		case MSG_TIME:
+			printf("%s", buffer);
+			break;
 	}
-	if (id == 2)
-		printf("%s", buffer);
 }
 
 void Client::gen_buy_request() {
@@ -70,15 +73,23 @@ void Client::gen_buy_request() {
 	}
 }
 
-char Client::read_message(char *body, int sockfd) {
+MSG_ID Client::read_message(char *body, int sockfd) {
 	int n;
-	char id;
+	char id, len;
 	n = read(sockfd, &id, 1);
+	n = read(sockfd, &len, 1);
 	bzero(buffer, 256);
-	n = read(sockfd, body, 255);
+	n = read(sockfd, body, (int)len);
 	if (n < 0) {
 		perror("ERROR reading from socket");
 		exit(1);
 	}
-	return id;
+	/*
+	for (int i = 0; i < strlen(body); i++) {
+		printf("%d ", (int)body[i]);
+	}
+	printf("\n");
+	*/
+	//printf("%d %d ", (int)id, strlen(body));
+	return (MSG_ID)id;
 }

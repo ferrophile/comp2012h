@@ -1,10 +1,11 @@
 #ifndef PROJ1_H 
 #define PROJ1_H
 
-struct message {
-	int id;
-	char* body;
-};
+typedef enum MSG_ID {
+	MSG_PRICE,
+	MSG_TIME,
+	MSG_REPLY
+} MSG_ID;
 
 class Server {
 	public:
@@ -14,7 +15,7 @@ class Server {
 		void process_buy_request(int sock);
 	private:
 		double rand_price();
-		void send_message(char id, char *body, int sock);
+		void send_message(MSG_ID id, char *body, int sock);
 		struct sockaddr_in serv_addr;
 		char buffer[256];
 		time_t time_img;
@@ -29,7 +30,7 @@ class Client {
 		void get_price();
 		void gen_buy_request();
 	private:
-		char read_message(char *body, int sockfd);
+		MSG_ID read_message(char *body, int sockfd);
 		int sockfd;
 		struct sockaddr_in serv_addr;
 		struct hostent *server;
