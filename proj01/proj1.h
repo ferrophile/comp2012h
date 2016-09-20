@@ -20,7 +20,6 @@ class Server {
 		char buffer[256];
 		time_t time_img;
 		double *price;
-		int *update_flag;
 		int *count;
 };
 

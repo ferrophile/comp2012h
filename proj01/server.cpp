@@ -49,6 +49,7 @@ void Server::gen_price(int sock) {
 	
 	if (!(time_img % 10))
 		*price = rand_price();
+	usleep(100000); //Sleep 0.1s to wait for all process finish
 	
 	bzero(buffer, 256);
 	sprintf(buffer, "$%.1f", *price);

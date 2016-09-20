@@ -52,7 +52,6 @@ void Client::get_price() {
 			printf("%s", buffer);
 			break;
 		case MSG_REPLY:
-			//printf("Cli: %s, Ser: %s\n", price_buy, buffer);
 			printf("client buy  at %s at %s", price_buy, time_buy);
 			printf("server sell at %s at %s", price, ctime(&time_img));
 			printf("all times approx\n");
