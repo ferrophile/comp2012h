@@ -1,3 +1,5 @@
+//client.cpp
+//Member-function definitions for class Client.
 #include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
@@ -10,7 +12,8 @@
 #include <time.h>
 #include "proj1.h"
 
-//Constructor
+//Client constructor
+//Initializes server address and shared variables
 Client::Client(char *hostname, int portno) {
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd < 0) {
@@ -40,17 +43,23 @@ Client::Client(char *hostname, int portno) {
 	bzero(time_buy, 30);
 }
 
+//Receives and handles different messages from server
+//If receive price update, print them out to screen
+//If receive buying request, compare with original buy
+//price and print buy result
 void Client::get_price() {
 	char id = read_message(buffer, sockfd);
 	time_t time_img = time(NULL);
 	switch (id) {
+		//Price update
 		case MSG_PRICE:
 			printf("%s ", buffer);
-			strcpy(price, buffer);
+			strcpy(price, buffer); //stores price
 			break;
 		case MSG_TIME:
 			printf("%s", buffer);
 			break;
+		//Buying request response
 		case MSG_REPLY:
 			printf("client buy  at %s at %s", price_buy, time_buy);
 			printf("server sell at %s at %s", price, ctime(&time_img));
@@ -60,6 +69,8 @@ void Client::get_price() {
 	}
 }
 
+//Reads ENTER keypress and generates buying request
+//to server
 void Client::gen_buy_request() {
 	int n;
 	char c = getchar();
@@ -76,13 +87,14 @@ void Client::gen_buy_request() {
 	}
 }
 
+//Reads incoming message and returns the message id
 MSG_ID Client::read_message(char *body, int sockfd) {
 	int n;
 	char id, len;
-	n = read(sockfd, &id, 1);
-	n = read(sockfd, &len, 1);
 	bzero(buffer, 256);
-	n = read(sockfd, body, (int)len);
+	n = read(sockfd, &id, 1);
+	n *= read(sockfd, &len, 1);
+	n *= read(sockfd, body, (int)len);
 	if (n < 0) {
 		perror("ERROR reading from socket");
 		exit(1);
