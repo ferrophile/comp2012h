@@ -9,8 +9,11 @@ class Row {
 		int blocks[10];
 		
 	public:
+		Row();
 		int check_row_filled();	
 		int check_space_filled(int pos); //used for checking before moving
+		int get_block(int id);
+		void set_block(int id, int type);
 };
 
 class Tetris : public QWidget
@@ -19,6 +22,7 @@ class Tetris : public QWidget
 	
 	public:
 		Tetris(QWidget *parent = 0);
+		~Tetris();
 		void move_block_down(); //run every second
 		void update_map(); //run every second, refresh map
 		void new_block();
@@ -31,7 +35,7 @@ class Tetris : public QWidget
 		QLabel mainLabel, prevLabel, lvlLabel, scoreLabel;
 		QVBoxLayout mainLayout;
 		
-		Row map[20];
+		Row *map[20];
 		int cur_block_type, cur_block_x, cur_block_y;
 };
 

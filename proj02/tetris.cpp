@@ -19,4 +19,17 @@ Tetris::Tetris(QWidget *parent) : QWidget(parent) {
 	
 	scoreLabel.setText("Score: 0");
 	scoreLabel.show();
+	
+	for (int i=0; i<20; i++) {
+		Row *tempRow = new Row();
+		map[i] = tempRow;
+	}
+	
+	//map[1]->set_block(5, 7);
+	//lvlLabel.setText(QString::number(map[1]->get_block(5)));
+	//lvlLabel.show();
+}
+
+Tetris::~Tetris() {
+	delete [] map;
 }
