@@ -1,7 +1,7 @@
 #include <QtGui>
-#include "tetris.h"
+#include "proj02.h"
 
-ing main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 	QApplication a(argc, argv);
 	
 	Tetris *tetris = new Tetris();
