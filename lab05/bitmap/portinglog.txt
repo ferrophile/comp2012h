@@ -1,0 +1,11 @@
+Log for qt3to4 on Mon Jul 11 17:25:59 2016. Number of log entries: 7
+In file /homes/cktang/2016Ftest/lab6/bitmap/my_widget.cpp at line 15 column 12: QMainWindow -> Q3MainWindow
+In file /homes/cktang/2016Ftest/lab6/bitmap/my_widget.cpp: Added the following include directives:
+	#include <QPaintEvent> 	#include <QPixmap> 
+No changes made to file /homes/cktang/2016Ftest/lab6/bitmap/main.cpp
+In file /homes/cktang/2016Ftest/lab6/bitmap/my_widget.h at line 3 column 20: qmainwindow.h -> q3mainwindow.h
+In file /homes/cktang/2016Ftest/lab6/bitmap/my_widget.h at line 11 column 38: QMainWindow -> Q3MainWindow
+In file /homes/cktang/2016Ftest/lab6/bitmap/my_widget.h: Added the following include directives:
+	#include <QPaintEvent> 
+In file bitmap.pro: Added entry QT +=  qt3support 
+
