@@ -39,16 +39,18 @@ class Tetris : public QWidget
 		QVBoxLayout mainLayout;
 		
 		Row *map[20];
-		int curType, curX, curY;
+		int curType, curX, curY, curDir;
 		QTimer *timer;
 		
 		QBrush colors[8] = {Qt::NoBrush, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::cyan, Qt::white, Qt::magenta};
 		int coords[8][6] = {{0,0,0,0,0,0}, {0,1,0,2,0,-1}, {0,-1,-1,0,-1,-1}, {0,1,1,0,1,-1}, {0,-1,1,0,1,1}, {0,1,0,-1,1,-1}, {0,1,0,-1,-1,-1}, {-1,0,0,1,1,0}};
-		int trans[4][4] = {{1,0,0,1},{0,1,-1,0},{-1,0,0,-1},{0,-1,-1,0}};
+		int trans[4][4] = {{1,0,0,1},{0,1,-1,0},{-1,0,0,-1},{0,-1,1,0}};
 		
 		//utility functions
 		void update_blocks(int type);
-		int check_blocks(int offX, int offY);
+		int check_blocks(int offX, int offY, int dir);
+		int trans_x(int x, int y, int dir);
+		int trans_y(int x, int y, int dir);
 };
 
 #endif // PROJ02_H
