@@ -12,6 +12,12 @@ int Row::get_block(int id) {
 	return blocks[id];
 }
 
+int Row::is_empty(int id) {
+	if (blocks[id])
+		return 0;
+	return 1;
+}
+
 void Row::set_block(int id, int type) {
 	if (type < 0 || type > 7)
 		return;
