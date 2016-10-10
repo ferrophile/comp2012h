@@ -24,7 +24,6 @@ class Tetris : public QWidget
 	public:
 		Tetris(QWidget *parent = 0);
 		~Tetris();
-		void new_block();
  
 	public slots:
 		void move_block_down();
@@ -47,8 +46,9 @@ class Tetris : public QWidget
 		int trans[4][4] = {{1,0,0,1},{0,1,-1,0},{-1,0,0,-1},{0,-1,1,0}};
 		
 		//utility functions
+		void new_block();
 		void update_blocks(int type);
-		int check_blocks(int offX, int offY, int dir);
+		void move_block(int offX, int offY, int offDir);
 		int trans_x(int x, int y, int dir);
 		int trans_y(int x, int y, int dir);
 };

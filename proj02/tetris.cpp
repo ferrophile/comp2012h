@@ -38,10 +38,8 @@ Tetris::Tetris(QWidget *parent) : QWidget(parent) {
 	map[7]->set_block(3, 3);
 	map[8]->set_block(3, 3);
 	
-	curType = 4;
-	curX = 5;
-	curY = 17;
-	curDir = 0;
+	new_block();
+	update_map();
 	
 	timer = new QTimer(this);
 	QObject::connect(timer, SIGNAL(timeout()), this, SLOT(move_block_down()));
@@ -54,10 +52,7 @@ Tetris::~Tetris() {
 }
 
 void Tetris::move_block_down() {
-	update_blocks(0);
-	if (check_blocks(0, -1, curDir))
-		curY--;
-	update_blocks(curType);
+	move_block(0, -1, 0);
 }
 
 void Tetris::update_map() {
@@ -82,44 +77,28 @@ void Tetris::update_map() {
 }
 
 void Tetris::keyPressEvent(QKeyEvent *event) {
-	int tempDir;
 	if (event->key() == Qt::Key_Left) {
-		update_blocks(0);
-		if (check_blocks(-1, 0, curDir))
-			curX--;
-		update_blocks(curType);
-		update_map();
+		move_block(-1, 0, 0);
 	}
 	if (event->key() == Qt::Key_Right) {
-		update_blocks(0);
-		if (check_blocks(1, 0, curDir))
-			curX++;
-		update_blocks(curType);
-		update_map();
+		move_block(1, 0, 0);
 	}
 	if (event->key() == Qt::Key_Down) {
-		update_blocks(0);
-		if (check_blocks(0, -1, curDir))
-			curY--;
-		update_blocks(curType);
-		update_map();
+		move_block(0, -1, 0);
 	}
 	if (event->key() == Qt::Key_Z) {
-		tempDir = (curDir+1)%4;
-		update_blocks(0);
-		if (check_blocks(0, 0, tempDir))
-			curDir = tempDir;
-		update_blocks(curType);
-		update_map();
+		move_block(0, 0, 1);
 	}
 	if (event->key() == Qt::Key_X) {
-		tempDir = (curDir+3)%4;
-		update_blocks(0);
-		if (check_blocks(0, 0, tempDir))
-			curDir = tempDir;
-		update_blocks(curType);
-		update_map();
+		move_block(0, 0, 3);
 	}
+}
+
+void Tetris::new_block() {
+	curType = 4;
+	curX = 5;
+	curY = 17;
+	curDir = 0;
 }
 
 void Tetris::update_blocks(int type) {
@@ -132,19 +111,36 @@ void Tetris::update_blocks(int type) {
 	}
 }
 
-int Tetris::check_blocks(int offX, int offY, int dir) {
-	int i, tmpX, tmpY;
+void Tetris::move_block(int offX, int offY, int offDir) {
+	int i, tmpX, tmpY, tmpDir;
 	int empty = 1;
 	
-	if (curY == 0) return 0;
-	empty *= map[curY+offY]->is_empty(curX+offX);
-	for (i=0; i<6; i+=2) {
-		tmpY = curY + trans_y(coords[curType][i], coords[curType][i+1], dir);
-		tmpX = curX + trans_x(coords[curType][i], coords[curType][i+1], dir);
-		if (tmpY == 0) return 0;
-		empty *= map[tmpY+offY]->is_empty(tmpX+offX);
+	update_blocks(0);
+	
+	if (curY == 0) {
+		empty = 0;
+	} else {
+		empty *= map[curY+offY]->is_empty(curX+offX);
+		for (i=0; i<6; i+=2) {
+			tmpDir = (curDir+offDir)%4;
+			tmpY = curY + trans_y(coords[curType][i], coords[curType][i+1], tmpDir);
+			tmpX = curX + trans_x(coords[curType][i], coords[curType][i+1], tmpDir);
+			if (tmpY == 0) {
+				empty = 0;
+			} else {
+				empty *= map[tmpY+offY]->is_empty(tmpX+offX);
+			}
+		}
 	}
-	return empty;
+	
+	if (empty) {
+		curX += offX;
+		curY += offY;
+		curDir = (curDir+offDir)%4;
+	}
+	
+	update_blocks(curType);
+	update_map();
 }
 
 int Tetris::trans_x(int x, int y, int dir) {
