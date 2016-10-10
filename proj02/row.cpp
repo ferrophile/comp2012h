@@ -23,3 +23,11 @@ void Row::set_block(int id, int type) {
 		return;
 	blocks[id] = type;
 }
+
+int Row::is_row_filled() {
+	for (int i=0; i<10; i++) {
+		if (!blocks[i])
+			return 0;
+	}
+	return 1;
+}

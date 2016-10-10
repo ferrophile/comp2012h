@@ -14,7 +14,7 @@ class Row {
 		int get_block(int id);
 		int is_empty(int id);
 		void set_block(int id, int type);
-		int check_row_filled();
+		int is_row_filled();
 };
 
 class Tetris : public QWidget
@@ -48,7 +48,7 @@ class Tetris : public QWidget
 		//utility functions
 		void new_block();
 		void update_blocks(int type);
-		void move_block(int offX, int offY, int offDir);
+		int move_block(int offX, int offY, int offDir);
 		int trans_x(int x, int y, int dir);
 		int trans_y(int x, int y, int dir);
 };

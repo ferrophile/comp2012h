@@ -2,6 +2,8 @@
 
 #include <QApplication>
 #include <QKeyEvent>
+#include <stdlib.h>
+#include <time.h>
 
 Tetris::Tetris(QWidget *parent) : QWidget(parent) {
 	int i;
@@ -28,16 +30,17 @@ Tetris::Tetris(QWidget *parent) : QWidget(parent) {
 	}
 	
 	//Temp blocks for debugging
-	map[0]->set_block(7, 7);
-	map[0]->set_block(8, 1);
-	map[1]->set_block(7, 5);
-	map[1]->set_block(8, 2);
-	map[4]->set_block(3, 3);
-	map[5]->set_block(3, 3);
-	map[6]->set_block(3, 3);
-	map[7]->set_block(3, 3);
-	map[8]->set_block(3, 3);
+	map[0]->set_block(0, 1);
+	map[0]->set_block(1, 1);
+	map[0]->set_block(2, 1);
+	map[0]->set_block(3, 1);
+	map[0]->set_block(4, 3);
+	map[0]->set_block(5, 3);
+	map[0]->set_block(6, 3);
+	map[0]->set_block(7, 2);
+	map[0]->set_block(8, 2);
 	
+	srand(time(NULL));
 	new_block();
 	update_map();
 	
@@ -52,7 +55,10 @@ Tetris::~Tetris() {
 }
 
 void Tetris::move_block_down() {
-	move_block(0, -1, 0);
+	if (!move_block(0, -1, 0)) {
+		new_block();
+		update_map();
+	}
 }
 
 void Tetris::update_map() {
@@ -95,7 +101,7 @@ void Tetris::keyPressEvent(QKeyEvent *event) {
 }
 
 void Tetris::new_block() {
-	curType = 4;
+	curType = rand()%7+1;
 	curX = 5;
 	curY = 17;
 	curDir = 0;
@@ -111,7 +117,7 @@ void Tetris::update_blocks(int type) {
 	}
 }
 
-void Tetris::move_block(int offX, int offY, int offDir) {
+int Tetris::move_block(int offX, int offY, int offDir) {
 	int i, tmpX, tmpY, tmpDir;
 	int empty = 1;
 	
@@ -141,6 +147,8 @@ void Tetris::move_block(int offX, int offY, int offDir) {
 	
 	update_blocks(curType);
 	update_map();
+	
+	return empty;
 }
 
 int Tetris::trans_x(int x, int y, int dir) {
