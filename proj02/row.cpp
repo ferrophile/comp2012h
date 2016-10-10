@@ -13,7 +13,7 @@ int Row::get_block(int id) {
 }
 
 int Row::is_empty(int id) {
-	if (blocks[id])
+	if ((id < 0) || (id >= 20) || blocks[id])
 		return 0;
 	return 1;
 }

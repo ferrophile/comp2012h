@@ -48,7 +48,7 @@ class Tetris : public QWidget
 		
 		//utility functions
 		void update_blocks(int type);
-		int check_blocks(int offY);
+		int check_blocks(int offX, int offY);
 };
 
 #endif // PROJ02_H
