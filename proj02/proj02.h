@@ -3,6 +3,7 @@
 
 #include <QtGui>
 #include <QLabel>
+#include <qtimer.h>
 
 class Row {
 	private:
@@ -23,10 +24,12 @@ class Tetris : public QWidget
 	public:
 		Tetris(QWidget *parent = 0);
 		~Tetris();
-		void move_block_down(); //run every second
-		void update_map(); //run every second, refresh map
 		void new_block();
  
+	public slots:
+		void move_block_down();
+		void update_map();
+		
 	//protected:
 		//void keyPressEvent(QKeyEvent *);
 		
@@ -36,7 +39,11 @@ class Tetris : public QWidget
 		QVBoxLayout mainLayout;
 		
 		Row *map[20];
-		int cur_block_type, cur_block_x, cur_block_y;
+		int curType, curX, curY;
+		QTimer *timer;
+		
+		QBrush colors[8] = {Qt::NoBrush, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::cyan, Qt::white, Qt::magenta};
+		int coords[8][6] = {{0,0,0,0,0,0}, {0,1,0,2,0,-1}, {0,-1,-1,0,-1,-1}, {0,1,1,0,1,-1}, {0,-1,1,0,1,1}, {0,1,0,-1,1,-1}, {0,1,0,-1,-1,-1}, {-1,0,0,1,1,0}};
 };
 
 #endif // PROJ02_H
