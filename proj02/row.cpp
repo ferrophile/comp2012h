@@ -31,3 +31,11 @@ int Row::is_row_filled() {
 	}
 	return 1;
 }
+
+int Row::is_row_empty() {
+	for (int i=0; i<10; i++) {
+		if (blocks[i])
+			return 0;
+	}
+	return 1;
+}

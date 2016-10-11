@@ -3,9 +3,10 @@
 #include <QApplication>
 #include <QKeyEvent>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 
-Tetris::Tetris(QWidget *parent) : QWidget(parent) {
+Tetris::Tetris(QWidget *parent) : QWidget(parent), lvl(1), score(0) {
 	int i;
 	
 	mainLayout.addWidget(&mainLabel);
@@ -30,15 +31,6 @@ Tetris::Tetris(QWidget *parent) : QWidget(parent) {
 	}
 	
 	//Temp blocks for debugging
-	map[0]->set_block(0, 1);
-	map[0]->set_block(1, 1);
-	map[0]->set_block(2, 1);
-	map[0]->set_block(3, 1);
-	map[0]->set_block(4, 3);
-	map[0]->set_block(5, 3);
-	map[0]->set_block(6, 3);
-	map[0]->set_block(7, 2);
-	map[0]->set_block(8, 2);
 	
 	srand(time(NULL));
 	new_block();
@@ -55,7 +47,30 @@ Tetris::~Tetris() {
 }
 
 void Tetris::move_block_down() {
+	int i, j;
+	int rowNo = 0;
 	if (!move_block(0, -1, 0)) {
+		for (i=0; i<20; i++) {
+			if (map[i]->is_row_empty()) break;
+			if (map[i]->is_row_filled()) {
+				rowNo++;
+				delete map[i];
+				for (j=i; j<19; j++) {
+					map[j] = map[j+1];
+				}
+				Row *tempRow = new Row();
+				map[19] = tempRow;
+				i--;
+			}
+		}
+		if (rowNo) {
+			score += (rowNo * rowNo * 10);
+			QString	scoreMsg;
+			scoreMsg += "Score: ";
+			scoreMsg += QString::number(score);
+			scoreLabel.setText(scoreMsg);
+			scoreLabel.show();
+		}
 		new_block();
 		update_map();
 	}
@@ -77,9 +92,6 @@ void Tetris::update_map() {
 			}
 		}		
 	}
-	
-    lvlLabel.setText(QString::number(curDir));
-    lvlLabel.show();
 }
 
 void Tetris::keyPressEvent(QKeyEvent *event) {
@@ -102,6 +114,7 @@ void Tetris::keyPressEvent(QKeyEvent *event) {
 
 void Tetris::new_block() {
 	curType = rand()%7+1;
+	//curType = 1;
 	curX = 5;
 	curY = 17;
 	curDir = 0;
