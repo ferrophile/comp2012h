@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <time.h>
 
-Tetris::Tetris(QWidget *parent) : QWidget(parent), lvl(1), score(0) {
+Tetris::Tetris(QWidget *parent) : QWidget(parent), lvl(1), score(0), colors{Qt::NoBrush, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::cyan, QBrush(QColor(255,127,0)), Qt::magenta}, coords{{0,0,0,0,0,0}, {0,1,0,2,0,-1}, {0,-1,-1,0,-1,-1}, {0,1,1,0,1,-1}, {0,-1,1,0,1,1}, {0,1,0,-1,1,-1}, {0,1,0,-1,-1,-1}, {-1,0,0,1,1,0}}, trans{{1,0,0,1},{0,1,-1,0},{-1,0,0,-1},{0,-1,1,0}} {
 	int i;
 	
 	mainLayout.addWidget(&mainLabel);
@@ -24,7 +24,7 @@ Tetris::Tetris(QWidget *parent) : QWidget(parent), lvl(1), score(0) {
 	
 	scoreLabel.setText("Score: 0");
 	scoreLabel.show();
-	
+
 	for (i=0; i<20; i++) {
 		Row *tempRow = new Row();
 		map[i] = tempRow;
@@ -124,6 +124,7 @@ void Tetris::new_block() {
 	curX = 5;
 	curY = 17;
 	curDir = 0;
+	update_blocks(curType);
 }
 
 void Tetris::update_blocks(int type) {
