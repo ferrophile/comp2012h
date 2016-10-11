@@ -30,8 +30,6 @@ Tetris::Tetris(QWidget *parent) : QWidget(parent), lvl(1), score(0) {
 		map[i] = tempRow;
 	}
 	
-	//Temp blocks for debugging
-	
 	srand(time(NULL));
 	new_block();
 	update_map();
@@ -70,6 +68,15 @@ void Tetris::move_block_down() {
 			scoreMsg += QString::number(score);
 			scoreLabel.setText(scoreMsg);
 			scoreLabel.show();
+		}
+		if (score >= lvl*100 && lvl < 10) {
+			lvl++;
+			QString	lvlMsg;
+			lvlMsg += "Level: ";
+			lvlMsg += QString::number(lvl);
+			lvlLabel.setText(lvlMsg);
+			lvlLabel.show();
+			timer->setInterval(1000 - (lvl-1)*100);
 		}
 		new_block();
 		update_map();
@@ -114,7 +121,6 @@ void Tetris::keyPressEvent(QKeyEvent *event) {
 
 void Tetris::new_block() {
 	curType = rand()%7+1;
-	//curType = 1;
 	curX = 5;
 	curY = 17;
 	curDir = 0;

@@ -43,6 +43,7 @@ class Tetris : public QWidget
 		int lvl, score;
 		QTimer *timer;
 		
+		//Gonna initialize all these fucking values in ctor
 		QBrush colors[8] = {Qt::NoBrush, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::cyan, Qt::white, Qt::magenta};
 		int coords[8][6] = {{0,0,0,0,0,0}, {0,1,0,2,0,-1}, {0,-1,-1,0,-1,-1}, {0,1,1,0,1,-1}, {0,-1,1,0,1,1}, {0,1,0,-1,1,-1}, {0,1,0,-1,-1,-1}, {-1,0,0,1,1,0}};
 		int trans[4][4] = {{1,0,0,1},{0,1,-1,0},{-1,0,0,-1},{0,-1,1,0}};
