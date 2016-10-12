@@ -1,3 +1,7 @@
+//COMP2012H Proj02 Tetris
+//Hong Wing PANG
+//tetriswindow.h
+
 #ifndef TETRISWINDOW_H
 #define TETRISWINDOW_H
 
@@ -8,18 +12,6 @@
 #include <tetriscontrol.h>
 
 class TetrisWindow : public QWidget {
-	private:	
-		QImage bgImage, prevBg;
-		QLabel mainLabel, prevLabel, lvlLabel, scoreLabel;
-		QHBoxLayout mainLayout;
-		QVBoxLayout sideLayout;
-		TetrisControl* tetrisControl;
-
-		QBrush colors[8];
-		
-	protected:
-		void keyPressEvent(QKeyEvent *);
-
 	public:
 		TetrisWindow(QWidget *parent = 0);
 		void draw_block(int type, int x, int y, int isPrev);
@@ -27,6 +19,22 @@ class TetrisWindow : public QWidget {
 		void clear_prev_window();
 		void set_lvl_label(QString text);
 		void set_score_label(QString text);
+		
+	protected:
+		void keyPressEvent(QKeyEvent *);
+
+	private:
+		//GUI Qt Objects
+		QImage bgImage, prevBg;
+		QLabel mainLabel, prevLabel, lvlLabel, scoreLabel;
+		QHBoxLayout mainLayout;
+		QVBoxLayout sideLayout;
+
+		//Controller object
+		TetrisControl* tetrisControl;
+
+		//Array storing colors to be used
+		QBrush colors[8];
 };
 
 #endif // TETRISWINDOW_H

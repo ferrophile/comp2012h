@@ -1,3 +1,7 @@
+//COMP2012H Proj02 Tetris
+//Hong Wing PANG
+//main.cpp
+
 #include <QtGui>
 #include "tetriswindow.h"
 
