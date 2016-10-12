@@ -1,11 +1,11 @@
 #include <QtGui>
-#include "proj02.h"
+#include "tetriswindow.h"
 
 int main(int argc, char *argv[]) {
 	QApplication a(argc, argv);
 	
-	Tetris *tetris = new Tetris();
-	tetris->show();
+	TetrisWindow *w = new TetrisWindow();
+	w->show();
 	
 	return a.exec();
 }

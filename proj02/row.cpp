@@ -1,7 +1,6 @@
-#include "proj02.h"
-
 #include <QApplication>
 #include <QKeyEvent>
+#include "tetriswindow.h"
 
 Row::Row() {
 	clear_row();
