@@ -6,9 +6,9 @@
 #include <stdio.h>
 #include <time.h>
 
-Tetris::Tetris(QWidget *parent) : QWidget(parent), lvl(1), score(0), colors{Qt::NoBrush, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::cyan, QBrush(QColor(255,127,0)), Qt::magenta}, coords{{0,0,0,0,0,0}, {0,1,0,2,0,-1}, {0,-1,-1,0,-1,-1}, {0,1,1,0,1,-1}, {0,-1,1,0,1,1}, {0,1,0,-1,1,-1}, {0,1,0,-1,-1,-1}, {-1,0,0,1,1,0}}, trans{{1,0,0,1},{0,1,-1,0},{-1,0,0,-1},{0,-1,1,0}} {
+Tetris::Tetris(QWidget *parent) : QWidget(parent), isRunning(0), colors{Qt::NoBrush, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::cyan, QBrush(QColor(255,127,0)), Qt::magenta}, coords{{0,0,0,0,0,0}, {0,1,0,2,0,-1}, {0,-1,-1,0,-1,-1}, {0,1,1,0,1,-1}, {0,-1,1,0,1,1}, {0,1,0,-1,1,-1}, {0,1,0,-1,-1,-1}, {-1,0,0,1,1,0}}, trans{{1,0,0,1},{0,1,-1,0},{-1,0,0,-1},{0,-1,1,0}} {
 	int i;
-	
+
 	mainLayout.addWidget(&mainLabel);
 	mainLayout.addWidget(&prevLabel);
 	mainLayout.addWidget(&lvlLabel);
@@ -18,7 +18,7 @@ Tetris::Tetris(QWidget *parent) : QWidget(parent), lvl(1), score(0), colors{Qt::
 	bgImage.load("background.bmp");
 	mainLabel.setPixmap(QPixmap::fromImage(bgImage));
 	mainLabel.show();
-	
+
 	lvlLabel.setText("Level: 1");
 	lvlLabel.show();
 	
@@ -30,14 +30,9 @@ Tetris::Tetris(QWidget *parent) : QWidget(parent), lvl(1), score(0), colors{Qt::
 		map[i] = tempRow;
 	}
 	
-	srand(time(NULL));
-	new_block();
-	update_map();
-	
 	timer = new QTimer(this);
 	QObject::connect(timer, SIGNAL(timeout()), this, SLOT(move_block_down()));
 	QObject::connect(timer, SIGNAL(timeout()), this, SLOT(update_map()));
-	timer->start(1000);
 }
 
 Tetris::~Tetris() {
@@ -102,29 +97,76 @@ void Tetris::update_map() {
 }
 
 void Tetris::keyPressEvent(QKeyEvent *event) {
-	if (event->key() == Qt::Key_Left) {
-		move_block(-1, 0, 0);
-	}
-	if (event->key() == Qt::Key_Right) {
-		move_block(1, 0, 0);
-	}
-	if (event->key() == Qt::Key_Down) {
-		move_block(0, -1, 0);
-	}
-	if (event->key() == Qt::Key_Z) {
-		move_block(0, 0, 1);
-	}
-	if (event->key() == Qt::Key_X) {
-		move_block(0, 0, 3);
+	if (isRunning) {
+		if (event->key() == Qt::Key_Left) {
+			move_block(-1, 0, 0);
+		}
+		if (event->key() == Qt::Key_Right) {
+			move_block(1, 0, 0);
+		}
+		if (event->key() == Qt::Key_Down) {
+			move_block(0, -1, 0);
+		}
+		if (event->key() == Qt::Key_Z) {
+			move_block(0, 0, 1);
+		}
+		if (event->key() == Qt::Key_X) {
+			move_block(0, 0, 3);
+		}
+	} else {
+		if (event->key() == Qt::Key_Up) {
+			isRunning = 1;
+			reset_game();
+		}
 	}
 }
 
+void Tetris::reset_game() {
+	int i;
+	lvl = 1;
+	score = 0;
+	isRunning = 1;
+	
+	lvlLabel.setText("Level: 1");
+	lvlLabel.show();
+	
+	scoreLabel.setText("Score: 0");
+	scoreLabel.show();
+
+	for (i=0; i<20; i++) {
+		map[i]->clear_row();
+	}
+
+	srand(time(NULL));
+	new_block();
+	update_map();
+	timer->start(1000);
+}
+
 void Tetris::new_block() {
+	int i, tmpX, tmpY;
+	int empty = 1;
+
 	curType = rand()%7+1;
 	curX = 5;
 	curY = 17;
 	curDir = 0;
-	update_blocks(curType);
+
+	empty *= map[curY]->is_empty(curX);
+	for (i=0; i<6; i+=2) {
+		tmpY = curY + trans_y(coords[curType][i], coords[curType][i+1], curDir);
+		tmpX = curX + trans_x(coords[curType][i], coords[curType][i+1], curDir);
+		empty *= map[tmpY]->is_empty(tmpX);
+	}
+
+	if (empty) {
+		update_blocks(curType);
+	} else {
+		lvlLabel.setText("Game Over!");
+		lvlLabel.show();
+		timer->stop();
+		isRunning = 0;
+	}
 }
 
 void Tetris::update_blocks(int type) {
@@ -143,7 +185,7 @@ int Tetris::move_block(int offX, int offY, int offDir) {
 	
 	update_blocks(0);
 	
-	if (curY == 0) {
+	if (curY+offY < 0) {
 		empty = 0;
 	} else {
 		empty *= map[curY+offY]->is_empty(curX+offX);
@@ -151,7 +193,7 @@ int Tetris::move_block(int offX, int offY, int offDir) {
 			tmpDir = (curDir+offDir)%4;
 			tmpY = curY + trans_y(coords[curType][i], coords[curType][i+1], tmpDir);
 			tmpX = curX + trans_x(coords[curType][i], coords[curType][i+1], tmpDir);
-			if (tmpY == 0) {
+			if (tmpY+offY < 0) {
 				empty = 0;
 			} else {
 				empty *= map[tmpY+offY]->is_empty(tmpX+offX);
