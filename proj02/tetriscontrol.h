@@ -25,7 +25,7 @@ class TetrisControl : public QWidget {
 	private:
 		TetrisWindow* tetrisWindow;
 		Row *map[20];
-		int curType, curX, curY, curDir;
+		int nextType, curType, curX, curY, curDir;
 		int lvl, score, isRunning;
 		QTimer *timer;
 

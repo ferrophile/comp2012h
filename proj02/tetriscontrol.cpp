@@ -5,7 +5,7 @@
 #include <time.h>
 #include "tetriswindow.h"
 
-TetrisControl::TetrisControl(QWidget *parent) : QWidget(parent), isRunning(0), coords{{0,0,0,0,0,0}, {0,1,0,2,0,-1}, {0,-1,-1,0,-1,-1}, {0,1,1,0,1,-1}, {0,-1,1,0,1,1}, {0,1,0,-1,1,-1}, {0,1,0,-1,-1,-1}, {-1,0,0,1,1,0}}, trans{{1,0,0,1},{0,1,-1,0},{-1,0,0,-1},{0,-1,1,0}} {
+TetrisControl::TetrisControl(QWidget *parent) : QWidget(parent), nextType(rand()%7+1), isRunning(0), coords{{0,0,0,0,0,0}, {0,1,0,2,0,-1}, {0,-1,-1,0,-1,-1}, {0,1,1,0,1,-1}, {0,-1,1,0,1,1}, {0,1,0,-1,1,-1}, {0,1,0,-1,-1,-1}, {-1,0,0,1,1,0}}, trans{{1,0,0,1},{0,1,-1,0},{-1,0,0,-1},{0,-1,1,0}} {
 	int i;
 
 	for (i=0; i<20; i++) {
@@ -124,7 +124,7 @@ void TetrisControl::update_map() {
 	tetrisWindow->clear_window();
 	for (int y=0; y<20; y++) {
 		for (int x=0; x<10; x++) {
-			tetrisWindow->draw_block(map[y]->get_block(x), x, y);
+			tetrisWindow->draw_block(map[y]->get_block(x), x, y, 0);
 		}		
 	}
 }
@@ -133,10 +133,17 @@ void TetrisControl::new_block() {
 	int i, tmpX, tmpY;
 	int empty = 1;
 
-	curType = rand()%7+1;
+	curType = nextType;
+	nextType = rand()%7+1;
 	curX = 5;
 	curY = 17;
 	curDir = 0;
+
+	tetrisWindow->clear_prev_window();
+	tetrisWindow->draw_block(nextType, 0, 0, 1);
+	for (i=0; i<6; i+=2) {
+		tetrisWindow->draw_block(nextType, coords[nextType][i], coords[nextType][i+1], 1);
+	}
 
 	empty *= map[curY]->is_empty(curX);
 	for (i=0; i<6; i+=2) {

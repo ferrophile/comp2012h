@@ -7,14 +7,15 @@
 
 TetrisWindow::TetrisWindow(QWidget *parent) : QWidget(parent), colors{Qt::NoBrush, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::cyan, QBrush(QColor(255,127,0)), Qt::magenta} {
 	mainLayout.addWidget(&mainLabel);
-	mainLayout.addWidget(&prevLabel);
-	mainLayout.addWidget(&lvlLabel);
-	mainLayout.addWidget(&scoreLabel);
+	sideLayout.addWidget(&prevLabel);
+	sideLayout.addWidget(&lvlLabel);
+	sideLayout.addWidget(&scoreLabel);
+	mainLayout.addLayout(&sideLayout);
 	setLayout(&mainLayout);
 	
-	bgImage.load("background.bmp");
-	mainLabel.setPixmap(QPixmap::fromImage(bgImage));
-	mainLabel.show();
+	prevBg = QImage(100, 150, QImage::Format_RGB32);
+	clear_window();
+	clear_prev_window();
 
 	lvlLabel.setText("Level: 1");
 	lvlLabel.show();
@@ -50,18 +51,38 @@ void TetrisWindow::keyPressEvent(QKeyEvent *event) {
 	}
 }
 
-void TetrisWindow::draw_block(int type, int x, int y) {
+void TetrisWindow::draw_block(int type, int x, int y, int isPrev) {
 	if (!type) return;
-	QPainter qPainter(&bgImage);
-	qPainter.setBrush(colors[type]);
-	qPainter.setPen(Qt::black);
-	qPainter.drawRect(x*20, 380-y*20, 19, 19);
-	mainLabel.setPixmap(QPixmap::fromImage(bgImage));
-	mainLabel.show();
+
+	if (isPrev) {
+		QPainter qPainter(&prevBg);
+		qPainter.setBrush(colors[type]);
+		qPainter.setPen(Qt::black);
+		qPainter.drawRect(x*20+40, 70-y*20, 19, 19);
+		prevLabel.setPixmap(QPixmap::fromImage(prevBg));
+		prevLabel.show();
+	} else {
+		QPainter qPainter(&bgImage);
+		qPainter.setBrush(colors[type]);
+		qPainter.setPen(Qt::black);
+		qPainter.drawRect(x*20, 380-y*20, 19, 19);
+		mainLabel.setPixmap(QPixmap::fromImage(bgImage));
+		mainLabel.show();
+	}
 }
 
 void TetrisWindow::clear_window() {
 	bgImage.load("background.bmp");
+	mainLabel.setPixmap(QPixmap::fromImage(bgImage));
+	mainLabel.show();
+}
+
+void TetrisWindow::clear_prev_window() {
+	QPainter painter(&prevBg);
+	painter.setBrush(Qt::white);
+	painter.drawRect(0,0,100,150);
+	prevLabel.setPixmap(QPixmap::fromImage(prevBg));
+	prevLabel.show();
 }
 
 void TetrisWindow::set_lvl_label(QString text) {
