@@ -71,7 +71,7 @@ void TetrisWindow::draw_block(int type, int x, int y, int isPrev) {
 	if (!type) return;
 
 	if (isPrev) {	//if draw on preview board
-		QPainter qPainter(&o);
+		QPainter qPainter(&prevBg);
 		qPainter.setBrush(colors[type]);
 		qPainter.setPen(Qt::black);
 		qPainter.drawRect(x*20+40, 70-y*20, 19, 19);
