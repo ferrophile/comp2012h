@@ -6,8 +6,7 @@ class Node {
 	public:
 		Node();
 		Node(const T& data);
-		Node<T> *nextNode();
-	private:
+		~Node();
 		Node<T> *next;
 		Node<T> *prev;
 		T *data;
@@ -17,18 +16,33 @@ template <typename T>
 class Deque {
 	public:
 		Deque();
+		~Deque();
 		bool isEmpty();
 		int size();
 		void addFirst(T item);
 		void addLast(T item);
 		T removeFirst();
 		T removeLast();
-		//Iterator
+		
+		class Iterator;
+		Iterator iterator();
+
 	private:
 		Node<T> *head;
 		Node<T> *tail;
 		int size;
 };
+
+template <typename T>
+class Deque<T>::Iterator {
+	public:
+		Iterator();
+		Iterator(const Deque<T>& deque);
+		T operator*();
+		Iterator& operator++();
+	private:
+		Node *curNode;
+}
 
 /*
  * Node class member functions
@@ -40,18 +54,12 @@ Node<T>::Node() : prev(NULL), next(NULL), data(NULL) {}
 
 //Type conversion constructor
 template <typename T>
-Node<T>::Node(const T& data) : prev(NULL), next(NULL), data(new T(t)) {}
+Node<T>::Node(const T& data) : prev(NULL), next(NULL), data(new T(data)) {}
 
 //Destructor
 template <typename T>
 Node<T>::~Node() {
 	delete data;
-}
-
-//Return next node
-template <typename T>
-Node<T>* Node<T>::nextNode() {
-	return next;
 }
 
 /*
@@ -61,6 +69,17 @@ Node<T>* Node<T>::nextNode() {
 //Default constructor
 template <typename T>
 Deque<T>::Deque() : head(NULL), tail(NULL), size(0) {}
+
+template <typename T>
+Deque<T>::~Deque() {
+	if (this->isEmpty()) return;
+	Node<T>* cur = head;
+	while(cur != tail) {
+		cur = cur->next;
+		delete cur->prev;
+	}
+	delete cur;
+}
 
 template <typename T>
 bool Deque<T>::isEmpty() {
@@ -128,6 +147,28 @@ T Deque<T>::removeLast() {
 	delete temp;
 	size--;
 	return *lastData;
+}
+
+Iterator Deque<T>::iterator() {
+	Iterator itr = Iterator(*this);
+	return itr;
+}
+
+/*
+ * Iterator class member functions
+ */
+
+Deque<T>::Iterator::Iterator() : node(NULL) {}
+
+Deque<T>::Iterator::Iterator(const Deque<T>& deque) : node(deque.head) {}
+
+T Deque<T>::Iterator::operator*() {
+	return *(curNode->data);
+}
+
+Iterator& Deque<T>::Iterator::operator++() {
+	curNode = curNode->next;
+	return *this;
 }
 
 #endif
