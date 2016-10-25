@@ -31,7 +31,6 @@ class Deque {
 		
 		class Iterator;
 		Iterator iterator();
-
 	private:
 		Node<T> *head;
 		Node<T> *tail;
@@ -102,11 +101,11 @@ void Deque<T>::addFirst(T item) {
 	if (this->isEmpty()) {
 		head = newNode;
 		tail = newNode;
-		return;
+	} else {
+		newNode->next = head;
+		head->prev = newNode;
+		head = newNode;
 	}
-	newNode->next = head;
-	head->prev = newNode;
-	head = newNode;
 	dequeSize++;
 }
 
@@ -116,11 +115,11 @@ void Deque<T>::addLast(T item) {
 	if (this->isEmpty()) {
 		head = newNode;
 		tail = newNode;
-		return;
+	} else {
+		newNode->prev = tail;
+		tail->next = newNode;
+		tail = newNode;
 	}
-	newNode->prev = tail;
-	tail->next = newNode;
-	tail = newNode;
 	dequeSize++;
 }
 
@@ -129,13 +128,17 @@ T Deque<T>::removeFirst() {
 	if (this->isEmpty()) {
 		throw runtime_error("Try to remove item from a empty list.");
 	}
-	head->next->prev = NULL;
-	T *firstData = head->data;
+	T firstData = *(head->data);
 	Node<T> *temp = head;
-	head = head->next;
+	if (this->size() == 1) {
+		head = NULL;
+	} else {
+		head->next->prev = NULL;
+		head = head->next;
+	}
 	delete temp;
 	dequeSize--;
-	return *firstData;
+	return firstData;
 }
 
 template <typename T>
@@ -143,13 +146,17 @@ T Deque<T>::removeLast() {
 	if (this->isEmpty()) {
 		throw runtime_error("Try to remove item from a empty list.");
 	}
-	tail->prev->next = NULL;
-	T *lastData = tail->data;
+	T lastData = *(tail->data);
 	Node<T> *temp = tail;
-	tail = tail->prev;
+	if (this->size() == 1) {
+		head = NULL;
+	} else {
+		tail->prev->next = NULL;
+		tail = tail->prev;
+	}
 	delete temp;
 	dequeSize--;
-	return *lastData;
+	return lastData;
 }
 
 template <typename T>

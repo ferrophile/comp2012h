@@ -52,13 +52,12 @@ int main(int argc, char ** argv){
 
 //  output of 1. is different from 2.'s  , Why?
 //1.
-		cout <<"remove LFL : " << q.removeLast() << " ";
-		cout << q.removeFirst()<<" ";
-		cout <<q.removeLast()<<endl;
-/*
+		//cout <<"remove LFL : " << q.removeLast() << " ";
+		//cout << q.removeFirst()<<" ";
+		//cout <<q.removeLast()<<endl;
+
 //2.
 		cout <<"remove LFL : " << q.removeLast() << " " << q.removeFirst()<<" "<<q.removeLast()<<endl;
-*/
 
 		return 0;
 }
