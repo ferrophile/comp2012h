@@ -1,10 +1,16 @@
-#include "deque.h"
+/*
+ * COMP2012H Project 3
+ * Hong Wing PANG 20315504
+ * Palindrome.cpp
+ */
+
 #include <iostream>
 #include <cstdio>
+#include "deque.h"
 
 using namespace std;
 
-int main(int argc, char ** argv){
+int main(int argc, char ** argv) {
 	Deque<char> q;
 	char buf;
 	char f, l;
