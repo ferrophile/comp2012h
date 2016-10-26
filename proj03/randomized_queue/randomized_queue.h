@@ -80,7 +80,7 @@ void RandomizedQueue<T>::enqueue(T item) {
 template <typename T>
 T RandomizedQueue<T>::dequeue() {
 	if (this->isEmpty()) {
-		throw runtime_error("Try to remove item from an empty list.")
+		throw runtime_error("Try to remove item from an empty list.");
 	}
 
 	if (Top % SIZE == SIZE - 1) {
@@ -101,7 +101,7 @@ T RandomizedQueue<T>::sample() {
 }
 
 template <typename T>
-typename RandomizedQueue<T>::Iterator RandomizedQueue<t>::iterator() {
+typename RandomizedQueue<T>::Iterator RandomizedQueue<T>::iterator() {
 	Iterator itr = Iterator(*this);
 	return itr;
 }
