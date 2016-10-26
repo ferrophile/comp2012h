@@ -83,7 +83,7 @@ T RandomizedQueue<T>::dequeue() {
 		throw runtime_error("Try to remove item from an empty list.");
 	}
 
-	if (Top % SIZE == SIZE - 1) {
+	if (Top % SIZE == 0) {
 		changeSize(maxTop-SIZE);
 	}
 

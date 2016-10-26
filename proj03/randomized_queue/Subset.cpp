@@ -18,10 +18,9 @@ int main(int argc, char ** argv) {
 	int size = atoi(argv[1]);
 	string str = "";
 	char buf;
-	RandomizedQueue<string> q, tmp;
+	RandomizedQueue<string> q;
 
-	while (buf != '\n') {
-		buf = getchar();
+	while ((buf = getchar()) != '\n') {
 		if (buf == ' ') {
 			q.enqueue(str);
 			str = "";
@@ -29,12 +28,11 @@ int main(int argc, char ** argv) {
 			str += buf;
 		}
 	}
+	q.enqueue(str);
 
 	for (int i=0; i<size; i++) {
-		tmp.enqueue(q.dequeue());
+		cout << q.dequeue() << endl;
 	}
-
-	cout << tmp.size() << endl;
 
 	return 0;
 }
