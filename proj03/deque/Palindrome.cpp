@@ -4,11 +4,10 @@
 
 using namespace std;
 
-
 int main(int argc, char ** argv){
 	Deque<char> q;
 	char buf;
-	char a, b;
+	char f, l;
 	bool ispal = false;
 
 	while (cin >> buf) {
@@ -22,9 +21,9 @@ int main(int argc, char ** argv){
 	if (!(q.size() % 2)) {
 		ispal = true;
 		while(q.size()) {
-			a = q.removeFirst();
-			b = q.removeLast();
-			if ((a+b != 'A'+'T') && (a+b != 'C'+'G')) {
+			f = q.removeFirst();
+			l = q.removeLast();
+			if ((f+l != 'A'+'T') && (f+l != 'C'+'G')) {
 				ispal = false;
 				break;
 			}

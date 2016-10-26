@@ -1,3 +1,9 @@
+/*
+ * COMP2012H Project 3
+ * Hong Wing PANG 20315504
+ * deque.h
+ */
+
 #ifndef DEQUE_H
 #define DEQUE_H
 
@@ -126,7 +132,7 @@ void Deque<T>::addLast(T item) {
 template <typename T>
 T Deque<T>::removeFirst() {
 	if (this->isEmpty()) {
-		throw runtime_error("Try to remove item from a empty list.");
+		throw runtime_error("Try to remove item from an empty list.");
 	}
 	T firstData = *(head->data);
 	Node<T> *temp = head;
@@ -144,7 +150,7 @@ T Deque<T>::removeFirst() {
 template <typename T>
 T Deque<T>::removeLast() {
 	if (this->isEmpty()) {
-		throw runtime_error("Try to remove item from a empty list.");
+		throw runtime_error("Try to remove item from an empty list.");
 	}
 	T lastData = *(tail->data);
 	Node<T> *temp = tail;
