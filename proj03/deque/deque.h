@@ -16,18 +16,20 @@ using namespace std;
 template <typename T>
 class Node {
 	public:
+		//Member functions and data members
 		Node();
 		Node(const T& data);
 		~Node();
-		Node<T> *next;
-		Node<T> *prev;
-		T *data;
+		Node<T> *next; //Next node
+		Node<T> *prev; //Previous node
+		T *data; //Node data
 };
 
 //Deque class defition
 template <typename T>
 class Deque {
 	public:
+		//Public member functions
 		Deque();
 		~Deque();
 		bool isEmpty();
@@ -37,12 +39,14 @@ class Deque {
 		T removeFirst();
 		T removeLast();
 		
+		//Iterator
 		class Iterator;
 		Iterator iterator();
 	private:
-		Node<T> *head;
-		Node<T> *tail;
-		int dequeSize;
+		//Private data members
+		Node<T> *head; //Pointer to head of deque
+		Node<T> *tail; //Pointer to tail of deque
+		int dequeSize; //Size of deque
 };
 
 //Iterator class within Deque class definition
@@ -171,6 +175,7 @@ T Deque<T>::removeFirst() {
 	return firstData;
 }
 
+//Remove element from tail of deque
 template <typename T>
 T Deque<T>::removeLast() {
 	//If empty, throw error
@@ -210,7 +215,7 @@ typename Deque<T>::Iterator Deque<T>::iterator() {
 template <typename T>
 Deque<T>::Iterator::Iterator() : curNode(NULL) {}
 
-//Constructor by deque reference, set current node as head node
+//Constructor by deque reference, set current node to head node
 template <typename T>
 Deque<T>::Iterator::Iterator(const Deque<T>& deque) : curNode(deque.head) {}
 
