@@ -15,6 +15,11 @@ using namespace std;
 int main(int argc, char ** argv) {
 	srand(time(0));
 
+	if (argc < 2) {
+   		fprintf(stderr,"usage %s charno\n", argv[0]);
+		exit(0);
+	}
+
 	int size = atoi(argv[1]);
 	string str = "";
 	char buf;
@@ -22,8 +27,10 @@ int main(int argc, char ** argv) {
 
 	while ((buf = getchar()) != '\n') {
 		if (buf == ' ') {
-			q.enqueue(str);
-			str = "";
+			if (str != "") {
+				q.enqueue(str);
+				str = "";
+			}
 		} else {
 			str += buf;
 		}

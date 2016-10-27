@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <cstdio>
+#include <string>
 #include "deque.h"
 
 using namespace std;
@@ -16,7 +17,11 @@ int main(int argc, char ** argv) {
 	char f, l;
 	bool ispal = false;
 
-	while (cin >> buf) {
+	string line;
+	getline(cin, line);
+
+	for (int i=0; i<line.length(); i++) {
+		buf = line[i];
 		if (buf != 'A' && buf != 'T' && buf != 'C' && buf != 'G') {
 			cout << "false" << endl;
 			return 0;
