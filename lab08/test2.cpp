@@ -28,7 +28,7 @@ int GetStuRecord (ifstream &fin, Student &stu)
 char AssignStuGrade (Student &stu)
 {
     double sum = 0.0;
-    for (int i=0; i<=3; i++)
+    for (int i=0; i<3; i++)
         sum += stu.Scores[i];
     sum /= 3.0;
     
@@ -71,7 +71,7 @@ int main (int argc, char *argv[])
     {
         Student stu;
         int val = GetStuRecord(fin, stu);       // Retrive a student record
-        if (val = 0)                            // if read student record fail, then finish
+        if (val == 0)                            // if read student record fail, then finish
             break;       
         
         stu.Grade = AssignStuGrade (stu);       // Assign a grade to student
