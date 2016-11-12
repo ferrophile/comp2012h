@@ -7,17 +7,26 @@
 #ifndef POINT_H
 #define POINT_H
 
+#include <string>
+
+using namespace std;
+
 class Point {
 public:
 	Point();
 	Point(int newX, int newY);
 	~Point();
 
-	int getX();
-	int getY();
+	int getX() const;
+	int getY() const;
 
 	void setX(int newX);
 	void setY(int newY);
+
+	void printPt();
+	string printFormat();
+
+	int operator^(const Point& pt) const;
 
 private:
 	int x;
