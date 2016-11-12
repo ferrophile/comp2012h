@@ -7,14 +7,21 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include <QtGui>
-
-class Point : public QWidget {
+class Point {
 public:
-	Point()
+	Point();
+	Point(int newX, int newY);
+	~Point();
+
+	int getX();
+	int getY();
+
+	void setX(int newX);
+	void setY(int newY);
 
 private:
-	
+	int x;
+	int y;
 };
 
 #endif // POINT_H
