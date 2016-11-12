@@ -7,6 +7,7 @@
 #include "brute.h"
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <cstdlib>
 
 using namespace std;
@@ -47,6 +48,7 @@ void Brute::getCollinearPoints() {
 						line.push_back(points[x2]);
 						line.push_back(points[x3]);
 						line.push_back(points[x4]);
+						sort(line.begin(), line.end());
 						printLine(line);
 					}
 				}

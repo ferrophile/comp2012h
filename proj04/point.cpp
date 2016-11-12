@@ -43,6 +43,28 @@ string Point::printFormat() {
 	return os.str();
 }
 
+bool Point::operator==(const Point& pt) const {
+	return x == pt.getX() && y == pt.getY();
+}
+
+bool Point::operator!=(const Point& pt) const {
+	return !(*this == pt);
+}
+
+bool Point::operator<(const Point& pt) const {
+	if (x == pt.getX())
+		return (y < pt.getY());
+	else
+		return (x < pt.getX());
+}
+
+bool Point::operator>(const Point& pt) const {
+	if (x == pt.getX())
+		return (y > pt.getY());
+	else
+		return (x > pt.getX());
+}
+
 int Point::operator^(const Point& pt) const {
 	return (x*pt.getY() - y*pt.getX());
 }
