@@ -6,11 +6,15 @@
 
 #include "pointwindow.h"
 #include <QtGui>
+#include <cstdlib>
+#include <fstream>
+#include <string>
+#include <iostream>
 
-PointWindow::PointWindow() : PointWindow("") {}
+PointWindow::PointWindow() {}
 
-PointWindow::PointWindow(char *filename) : file(filename) {
-	QLabel *plotArea = new QLabel;	
+PointWindow::PointWindow(char *filename) : file(filename), size(0) {
+	plotArea = new QLabel;	
 	background = new QImage(600, 600, QImage::Format_RGB32);
 	painter = new QPainter(background);
 
@@ -42,6 +46,7 @@ PointWindow::PointWindow(char *filename) : file(filename) {
 	layout->addWidget(bottomFiller);
 	widget->setLayout(layout);
 
+	loadPoints();
 	createActions();
 	createMenus();
 
@@ -62,11 +67,42 @@ void PointWindow::loadFastAlgo() {
 }
 
 void PointWindow::exitPlotter() {
-
+	close();
 }
 
 void PointWindow::aboutPlotter() {
+	QMessageBox msgBox;
+	msgBox.setWindowTitle("About");
+	msgBox.setText("COMP2012H Proj04\nPointPlotter\nHong Wing PANG");
+	msgBox.exec();
+}
 
+void PointWindow::drawPoint(const Point &pt) const {
+	painter->setBrush(QColor(200, 200, 200));
+	painter->setPen(Qt::black);
+	painter->drawEllipse(pt.getX() * SCALE_X - SIZE/2 , WIN_Y - pt.getY() * SCALE_Y - SIZE/2, SIZE, SIZE);
+}
+
+void PointWindow::loadPoints() {
+	ifstream fs(file);
+	string str;
+	int tmpX, tmpY;
+
+	getline(fs, str);
+	int n = atoi(str.c_str());
+	size = n;
+	for (int i=0; i<n; i++) {
+		getline(fs, str, ' ');
+		tmpX = atoi(str.c_str());
+		getline(fs, str, '\n');
+		tmpY = atoi(str.c_str());
+		points.push_back(Point(tmpX, tmpY));
+	}
+
+	for (int i=0; i < size; i++)
+		drawPoint(points[i]);
+	plotArea->setPixmap(QPixmap::fromImage(*background));
+	plotArea->show();
 }
 
 void PointWindow::createActions() {
