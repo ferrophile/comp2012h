@@ -7,35 +7,21 @@
 #ifndef POINT_H
 #define POINT_H
 
+#include "vector2d.h"
 #include <string>
 
 using namespace std;
 
-class Point {
+class Point : public Vector2D {
 public:
 	Point();
 	Point(int newX, int newY);
 	~Point();
 
-	int getX() const;
-	int getY() const;
-
-	void setX(int newX);
-	void setY(int newY);
-
 	void printPt();
 	string printFormat();
 
 	double getRadian(const Point& pt) const;
-
-	bool operator==(const Point& pt) const;
-	bool operator!=(const Point& pt) const;
-	bool operator<(const Point& pt) const;
-	bool operator>(const Point& pt) const;
-
-private:
-	int x;
-	int y;
 };
 
 #endif // POINT_H
