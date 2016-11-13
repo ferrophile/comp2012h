@@ -35,34 +35,47 @@ Fast::~Fast() {}
 
 void Fast::getCollinearPoints() {
 	int size = points.size();
-	vector<double> angles, line;
-	vector< vector<double> > lines;
+	vector<Pair> angles, subset;
+	vector<Point> line;
+	vector< vector<Point> > lines;
+
+	Pair tmpPair;
+	int id;
 
 	for (int i=0; i < size; i++) {
 		angles.clear();
 		for (int j=0; j < size; j++) {
 			if (j==i) continue;
-			angles.push_back(points[i].getRadian(points[j]));
+
+			tmpPair.angle = points[i].getRadian(points[j]);
+			tmpPair.id = j;
+			angles.push_back(tmpPair);
 		}
 		sort(angles.begin(), angles.end());
 
-		line.clear();
-		line.push_back(angles[0]);
+		subset.clear();
+		subset.push_back(angles[0]);
 		for (int j=1; j < size; j++) {
-			if (angles[j] != angles[j-1]) {
-				if (line.size() >= 3) lines.push_back(line);
-				line.clear();
+			if (angles[j].angle != angles[j-1].angle) {
+				if (subset.size() >= 3) {
+					line.clear();
+					for (int k=0; k < subset.size(); k++) {
+						id = subset[k].id;
+						line.push_back(points[id]);
+					}
+					line.push_back(points[i]);
+					sort(line.begin(), line.end());
+					lines.push_back(line);
+				}
+				subset.clear();
 			}
-			line.push_back(angles[j]);
+			subset.push_back(angles[j]);
 		}
 	}
 
 	cout << lines.size() << endl;
-	for (int i=0; i < lines.size(); i++) {
-		for (int j=0; j < lines[i].size(); j++)
-			cout << lines[i][j] << ' ';
-		cout << endl;
-	}
+	for (int i=0; i < lines.size(); i++)
+		printLine(lines[i]);
 }
 
 bool Fast::printLine(vector<Point> line) {

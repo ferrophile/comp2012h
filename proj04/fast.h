@@ -20,10 +20,18 @@ public:
 
 	void getCollinearPoints();
 
+	struct Pair {
+		double angle;
+		int id;
+
+		bool operator<(const Pair &p) { return (angle < p.angle); }
+		bool operator>(const Pair &p) { return (angle > p.angle); }
+	};
+
 private:
 	bool isStandalone;
 	vector<Point> points;
-	
+
 	bool printLine(vector<Point> line);
 };
 
