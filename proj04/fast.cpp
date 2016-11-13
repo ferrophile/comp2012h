@@ -61,12 +61,6 @@ vector< vector<Point> > Fast::getCollinearPoints() {
 	cout << lines.size() << endl;
 	for (int i=0; i < lines.size(); i++)
 		printLine(lines[i]);
-}
 
-/*
-int main(int argc, char ** argv) {
-	Fast fastObj;
-	fastObj.getCollinearPoints();
-	return 0;
+	return lines;
 }
-*/
