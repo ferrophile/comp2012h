@@ -63,8 +63,10 @@ void Fast::getCollinearPoints() {
 		printLine(lines[i]);
 }
 
+/*
 int main(int argc, char ** argv) {
 	Fast fastObj;
 	fastObj.getCollinearPoints();
 	return 0;
 }
+*/

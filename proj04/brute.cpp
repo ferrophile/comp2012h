@@ -49,8 +49,10 @@ bool Brute::checkCollinear(const Point& pt1, const Point& pt2, const Point& pt3)
 	return (det == 0);
 }
 
+/*
 int main(int argc, char ** argv) {
 	Brute bruteObj;
 	bruteObj.getCollinearPoints();
 	return 0;
 }
+*/
