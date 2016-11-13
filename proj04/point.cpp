@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cmath>
 
 using namespace std;
 
@@ -43,6 +44,11 @@ string Point::printFormat() {
 	return os.str();
 }
 
+double Point::getRadian(const Point& pt) const {
+	if (x == pt.getX()) return 2.0;
+	return atan((double)(pt.getY() - y)/(double)(pt.getX() - x));
+}
+
 bool Point::operator==(const Point& pt) const {
 	return x == pt.getX() && y == pt.getY();
 }
@@ -64,8 +70,3 @@ bool Point::operator>(const Point& pt) const {
 	else
 		return (x > pt.getX());
 }
-
-int Point::operator^(const Point& pt) const {
-	return (x*pt.getY() - y*pt.getX());
-}
-

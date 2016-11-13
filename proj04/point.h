@@ -26,12 +26,12 @@ public:
 	void printPt();
 	string printFormat();
 
+	double getRadian(const Point& pt) const;
+
 	bool operator==(const Point& pt) const;
 	bool operator!=(const Point& pt) const;
 	bool operator<(const Point& pt) const;
 	bool operator>(const Point& pt) const;
-
-	int operator^(const Point& pt) const;
 
 private:
 	int x;
