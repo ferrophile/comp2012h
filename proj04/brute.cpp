@@ -12,24 +12,9 @@
 
 using namespace std;
 
-Brute::Brute() : isStandalone(true) {
-	vector<Point> tmpList;
-	points = tmpList;
+Brute::Brute() : Algorithm() {}
 
-	string str;
-	int tmpX, tmpY;
-	getline(cin, str);
-	int n = atoi(str.c_str());
-	for (int i=0; i<n; i++) {
-		getline(cin, str, ' ');
-		tmpX = atoi(str.c_str());
-		getline(cin, str, '\n');
-		tmpY = atoi(str.c_str());
-		points.push_back(Point(tmpX, tmpY));
-	}
-}
-
-Brute::Brute(const vector<Point> list) : isStandalone(false), points(list) {}
+Brute::Brute(const vector<Point> list) : Algorithm(list) {}
 
 Brute::~Brute() {}
 
@@ -62,15 +47,6 @@ bool Brute::checkCollinear(const Point& pt1, const Point& pt2, const Point& pt3)
 	det += pt2.getX()*(pt3.getY() - pt1.getY());
 	det += pt3.getX()*(pt1.getY() - pt2.getY());
 	return (det == 0);
-}
-
-bool Brute::printLine(vector<Point> line) {
-	int size = line.size();
-	cout << size << ": ";
-	for (int i=0; i < size-1; i++) {
-		cout << line[i].printFormat() << " -> ";
-	}
-	cout << line[size-1].printFormat() << endl;
 }
 
 int main(int argc, char ** argv) {

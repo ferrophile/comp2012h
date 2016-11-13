@@ -12,24 +12,9 @@
 
 using namespace std;
 
-Fast::Fast() : isStandalone(true) {
-	vector<Point> tmpList;
-	points = tmpList;
+Fast::Fast() : Algorithm() {}
 
-	string str;
-	int tmpX, tmpY;
-	getline(cin, str);
-	int n = atoi(str.c_str());
-	for (int i=0; i<n; i++) {
-		getline(cin, str, ' ');
-		tmpX = atoi(str.c_str());
-		getline(cin, str, '\n');
-		tmpY = atoi(str.c_str());
-		points.push_back(Point(tmpX, tmpY));
-	}
-}
-
-Fast::Fast(const vector<Point> list) : isStandalone(false), points(list) {}
+Fast::Fast(const vector<Point> list) : Algorithm(list) {}
 
 Fast::~Fast() {}
 
@@ -76,15 +61,6 @@ void Fast::getCollinearPoints() {
 	cout << lines.size() << endl;
 	for (int i=0; i < lines.size(); i++)
 		printLine(lines[i]);
-}
-
-bool Fast::printLine(vector<Point> line) {
-	int size = line.size();
-	cout << size << ": ";
-	for (int i=0; i < size-1; i++) {
-		cout << line[i].printFormat() << " -> ";
-	}
-	cout << line[size-1].printFormat() << endl;
 }
 
 int main(int argc, char ** argv) {

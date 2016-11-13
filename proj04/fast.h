@@ -7,18 +7,19 @@
 #ifndef FAST_H
 #define FAST_H
 
+#include "algorithm.h"
 #include "point.h"
 #include <vector>
 
 using namespace std;
 
-class Fast {
+class Fast : public Algorithm {
 public:
 	Fast();
 	Fast(const vector<Point> list);
 	~Fast();
 
-	void getCollinearPoints();
+	virtual void getCollinearPoints();
 
 	struct Pair {
 		double angle;
@@ -27,12 +28,6 @@ public:
 		bool operator<(const Pair &p) { return (angle < p.angle); }
 		bool operator>(const Pair &p) { return (angle > p.angle); }
 	};
-
-private:
-	bool isStandalone;
-	vector<Point> points;
-
-	bool printLine(vector<Point> line);
 };
 
 #endif //FAST_H
