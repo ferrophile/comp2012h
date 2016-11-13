@@ -18,7 +18,7 @@ Fast::Fast(const vector<Point> list) : Algorithm(list) {}
 
 Fast::~Fast() {}
 
-void Fast::getCollinearPoints() {
+vector< vector<Point> > Fast::getCollinearPoints() {
 	int size = points.size();
 	vector<Pair> angles, subset;
 	vector<Point> line;

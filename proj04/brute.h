@@ -19,10 +19,7 @@ public:
 	Brute(const vector<Point> list);
 	~Brute();
 
-	virtual void getCollinearPoints();
-
-private:
-	bool checkCollinear(const Point& pt1, const Point& pt2, const Point& pt3);
+	virtual vector< vector<Point> > getCollinearPoints();
 };
 
 #endif //BRUTE_H

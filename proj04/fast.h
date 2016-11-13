@@ -19,7 +19,7 @@ public:
 	Fast(const vector<Point> list);
 	~Fast();
 
-	virtual void getCollinearPoints();
+	virtual vector< vector<Point> > getCollinearPoints();
 
 	struct Pair {
 		double angle;

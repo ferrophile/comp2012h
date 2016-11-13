@@ -5,6 +5,7 @@
  */
 
 #include "pointwindow.h"
+#include "brute.h"
 #include <QtGui>
 #include <cstdlib>
 #include <fstream>
@@ -59,7 +60,18 @@ PointWindow::~PointWindow() {
 }
 
 void PointWindow::loadBruteAlgo() {
+	vector< vector<Point> > lines;
+	Brute bruteObj(points);
 
+	lines = bruteObj.getCollinearPoints();
+
+	for (int i=0; i < lines.size(); i++) {
+		guiDrawLine(*(lines[i].begin()), *(lines[i].end()-1));
+	}
+	for (int i=0; i < size; i++)
+		guiDrawPoint(points[i]);
+	plotArea->setPixmap(QPixmap::fromImage(*background));
+	plotArea->show();
 }
 
 void PointWindow::loadFastAlgo() {
@@ -77,10 +89,17 @@ void PointWindow::aboutPlotter() {
 	msgBox.exec();
 }
 
-void PointWindow::drawPoint(const Point &pt) const {
+void PointWindow::guiDrawPoint(const Point &pt) const {
+	painter->setRenderHint(QPainter::Antialiasing, true);
 	painter->setBrush(QColor(200, 200, 200));
 	painter->setPen(Qt::black);
-	painter->drawEllipse(pt.getX() * SCALE_X - SIZE/2 , WIN_Y - pt.getY() * SCALE_Y - SIZE/2, SIZE, SIZE);
+	painter->drawEllipse(pt.getX()*SCALE_X - SIZE/2 , WIN_Y-pt.getY()*SCALE_Y - SIZE/2, SIZE, SIZE);
+}
+
+void PointWindow::guiDrawLine(const Point &pt1, const Point &pt2) const {
+	painter->setRenderHint(QPainter::Antialiasing, true);
+	painter->setPen(QPen(Qt::black, 1));
+	painter->drawLine(pt1.getX() * SCALE_X, WIN_Y-pt1.getY()*SCALE_Y, pt2.getX() * SCALE_X, WIN_Y-pt2.getY()*SCALE_Y);
 }
 
 void PointWindow::loadPoints() {
@@ -100,7 +119,7 @@ void PointWindow::loadPoints() {
 	}
 
 	for (int i=0; i < size; i++)
-		drawPoint(points[i]);
+		guiDrawPoint(points[i]);
 	plotArea->setPixmap(QPixmap::fromImage(*background));
 	plotArea->show();
 }

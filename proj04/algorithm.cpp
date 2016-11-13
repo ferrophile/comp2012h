@@ -33,7 +33,7 @@ Algorithm::Algorithm(const vector<Point> list) : isStandalone(false), points(lis
 
 Algorithm::~Algorithm() {}
 
-bool Algorithm::printLine(vector<Point> line) {
+void Algorithm::printLine(vector<Point> line) {
 	int size = line.size();
 	cout << size << ": ";
 	for (int i=0; i < size-1; i++) {

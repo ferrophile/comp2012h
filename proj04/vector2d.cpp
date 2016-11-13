@@ -34,24 +34,36 @@ void Vector2D::setY(int newY) {
 	y = newY;
 }
 
-bool Vector2D::operator==(const Vector2D& pt) const {
-	return x == pt.getX() && y == pt.getY();
+Vector2D Vector2D::operator+(const Vector2D& v) const {
+	return Vector2D(x+v.getX(), y+v.getY());
 }
 
-bool Vector2D::operator!=(const Vector2D& pt) const {
-	return !(*this == pt);
+Vector2D Vector2D::operator-(const Vector2D& v) const {
+	return Vector2D(x-v.getX(), y-v.getY());
 }
 
-bool Vector2D::operator<(const Vector2D& pt) const {
-	if (x == pt.getX())
-		return (y < pt.getY());
+int Vector2D::crossProduct(const Vector2D& v1, const Vector2D& v2) {
+	return (v1.getX()*v2.getY() - v1.getY()*v2.getX());
+}
+
+bool Vector2D::operator==(const Vector2D& v) const {
+	return x == v.getX() && y == v.getY();
+}
+
+bool Vector2D::operator!=(const Vector2D& v) const {
+	return !(*this == v);
+}
+
+bool Vector2D::operator<(const Vector2D& v) const {
+	if (x == v.getX())
+		return (y < v.getY());
 	else
-		return (x < pt.getX());
+		return (x < v.getX());
 }
 
-bool Vector2D::operator>(const Vector2D& pt) const {
-	if (x == pt.getX())
-		return (y > pt.getY());
+bool Vector2D::operator>(const Vector2D& v) const {
+	if (x == v.getX())
+		return (y > v.getY());
 	else
-		return (x > pt.getX());
+		return (x > v.getX());
 }

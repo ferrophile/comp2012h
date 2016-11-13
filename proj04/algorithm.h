@@ -18,13 +18,13 @@ public:
 	Algorithm(const vector<Point> list);
 	~Algorithm();
 
-	virtual void getCollinearPoints() = 0;
+	virtual vector< vector<Point> > getCollinearPoints() = 0;
 
 protected:
 	bool isStandalone;
 	vector<Point> points;
 
-	bool printLine(vector<Point> line);
+	void printLine(vector<Point> line);
 };
 
 #endif //FAST_H

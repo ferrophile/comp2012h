@@ -23,10 +23,14 @@ public:
 	void setX(int newX);
 	void setY(int newY);
 
-	bool operator==(const Vector2D& pt) const;
-	bool operator!=(const Vector2D& pt) const;
-	bool operator<(const Vector2D& pt) const;
-	bool operator>(const Vector2D& pt) const;
+	Vector2D operator+(const Vector2D& v) const;
+	Vector2D operator-(const Vector2D& v) const;
+	static int crossProduct(const Vector2D& v1, const Vector2D& v2);
+	
+	bool operator==(const Vector2D& v) const;
+	bool operator!=(const Vector2D& v) const;
+	bool operator<(const Vector2D& v) const;
+	bool operator>(const Vector2D& v) const;
 
 protected:
 	int x;
