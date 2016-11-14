@@ -25,7 +25,6 @@ vector< vector<Point> > Fast::getCollinearPoints() {
 	vector< vector<Point> > rawLines, lines;
 
 	Pair tmpPair;
-	int id;
 
 	for (int i=0; i < size; i++) {
 		angles.clear();

@@ -6,6 +6,7 @@
 
 #include "pointwindow.h"
 #include "brute.h"
+#include "fast.h"
 #include <QtGui>
 #include <cstdlib>
 #include <fstream>
@@ -52,30 +53,28 @@ PointWindow::PointWindow(char *filename) : file(filename), size(0) {
 	createMenus();
 
 	setWindowTitle(tr("COMP2012H Project 4"));
+
+	timer = new QElapsedTimer();
 }
 
 PointWindow::~PointWindow() {
 	delete background;
 	delete painter;	
+	delete timer;
 }
 
 void PointWindow::loadBruteAlgo() {
-	vector< vector<Point> > lines;
 	Brute bruteObj(points);
-
-	lines = bruteObj.getCollinearPoints();
-
-	for (int i=0; i < lines.size(); i++) {
-		guiDrawLine(*(lines[i].begin()), *(lines[i].end()-1));
-	}
-	for (int i=0; i < size; i++)
-		guiDrawPoint(points[i]);
-	plotArea->setPixmap(QPixmap::fromImage(*background));
-	plotArea->show();
+	timer->start();
+	paintLines(bruteObj.getCollinearPoints());
+	createMsgBox("Timer", QString::number(timer->elapsed())+" msec");
 }
 
 void PointWindow::loadFastAlgo() {
-
+	Fast fastObj(points);
+	timer->start();
+	paintLines(fastObj.getCollinearPoints());
+	createMsgBox("Timer", QString::number(timer->elapsed())+" msec");
 }
 
 void PointWindow::exitPlotter() {
@@ -83,10 +82,7 @@ void PointWindow::exitPlotter() {
 }
 
 void PointWindow::aboutPlotter() {
-	QMessageBox msgBox;
-	msgBox.setWindowTitle("About");
-	msgBox.setText("COMP2012H Proj04\nPointPlotter\nHong Wing PANG");
-	msgBox.exec();
+	createMsgBox("About", "COMP2012H Proj04\nPointPlotter\nHong Wing PANG");
 }
 
 void PointWindow::guiDrawPoint(const Point &pt) const {
@@ -100,6 +96,22 @@ void PointWindow::guiDrawLine(const Point &pt1, const Point &pt2) const {
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	painter->setPen(QPen(Qt::black, 1));
 	painter->drawLine(convertPoint(pt1), convertPoint(pt2));
+}
+
+void PointWindow::paintLines(const vector< vector<Point> > &lines) const {	
+	for (int i=0; i < (int)lines.size(); i++)
+		guiDrawLine(*(lines[i].begin()), *(lines[i].end()-1));
+	for (int i=0; i < size; i++)
+		guiDrawPoint(points[i]);
+	plotArea->setPixmap(QPixmap::fromImage(*background));
+	plotArea->show();
+}
+
+void PointWindow::createMsgBox(QString title, QString msg) const {
+	QMessageBox msgBox;
+	msgBox.setWindowTitle(title);
+	msgBox.setText(msg);
+	msgBox.exec();
 }
 
 QPointF PointWindow::convertPoint(const Point &pt) const {
