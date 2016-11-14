@@ -93,13 +93,19 @@ void PointWindow::guiDrawPoint(const Point &pt) const {
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	painter->setBrush(QColor(200, 200, 200));
 	painter->setPen(Qt::black);
-	painter->drawEllipse(pt.getX()*SCALE_X - SIZE/2 , WIN_Y-pt.getY()*SCALE_Y - SIZE/2, SIZE, SIZE);
+	painter->drawEllipse(convertPoint(pt), SIZE, SIZE);
 }
 
 void PointWindow::guiDrawLine(const Point &pt1, const Point &pt2) const {
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	painter->setPen(QPen(Qt::black, 1));
-	painter->drawLine(pt1.getX() * SCALE_X, WIN_Y-pt1.getY()*SCALE_Y, pt2.getX() * SCALE_X, WIN_Y-pt2.getY()*SCALE_Y);
+	painter->drawLine(convertPoint(pt1), convertPoint(pt2));
+}
+
+QPointF PointWindow::convertPoint(const Point &pt) const {
+	int x = pt.getX()*SCALE_X;
+	int y = WIN_Y - pt.getY()*SCALE_Y;
+	return QPointF(x, y);
 }
 
 void PointWindow::loadPoints() {

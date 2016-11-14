@@ -20,9 +20,9 @@ Fast::~Fast() {}
 
 vector< vector<Point> > Fast::getCollinearPoints() {
 	int size = points.size();
-	vector<Pair> angles, subset;
+	vector<Pair> angles;
 	vector<Point> line;
-	vector< vector<Point> > lines;
+	vector< vector<Point> > rawLines, lines;
 
 	Pair tmpPair;
 	int id;
@@ -38,29 +38,33 @@ vector< vector<Point> > Fast::getCollinearPoints() {
 		}
 		sort(angles.begin(), angles.end());
 
-		subset.clear();
-		subset.push_back(angles[0]);
-		for (int j=1; j < size; j++) {
-			if (angles[j].angle != angles[j-1].angle) {
-				if (subset.size() >= 3) {
-					line.clear();
-					for (int k=0; k < subset.size(); k++) {
-						id = subset[k].id;
-						line.push_back(points[id]);
-					}
+		line.clear();
+		vector<Pair>::iterator itr;
+		for (itr = angles.begin(); itr < angles.end(); itr++) {
+			if (itr->angle == (itr+1)->angle) {
+				line.push_back(points[itr->id]);
+			} else {
+				if (line.size() >= 2) {
+					line.push_back(points[itr->id]);
 					line.push_back(points[i]);
-					sort(line.begin(), line.end());
-					lines.push_back(line);
+					rawLines.push_back(line);
 				}
-				subset.clear();
+				line.clear();
 			}
-			subset.push_back(angles[j]);
 		}
 	}
 
-	cout << lines.size() << endl;
-	for (int i=0; i < lines.size(); i++)
-		printLine(lines[i]);
+	vector< vector<Point> >::iterator itr;
+	for (itr = rawLines.begin(); itr < rawLines.end(); itr++) {
+		sort(itr->begin(), itr->end());
+	}
+	sort(rawLines.begin(), rawLines.end());
+	itr = rawLines.begin();
+	while (itr < rawLines.end()) {
+		printLine(*itr);
+		lines.push_back(*itr);
+		itr += itr->size();
+	}
 
 	return lines;
 }

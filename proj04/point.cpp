@@ -12,23 +12,31 @@
 
 using namespace std;
 
+//Default constructor
 Point::Point() : Vector2D() {}
 
+//Initialization constructor
 Point::Point(int newX, int newY) : Vector2D(newX, newY) {}
 
+//Destructor
 Point::~Point() {}
 
+/*-- Member functions --*/
+
+//Print out coordinates for debugging use
 void Point::printPt() {
-	cout << x << ' ' << y << endl;
+	cout << this->getX() << ' ' << this->getY() << endl;
 }
 
+//Return stream with formatted output
 string Point::printFormat() {
 	ostringstream os;
-	os << "(" << x << ", " << y << ")";
+	os << "(" << this->getX() << ", " << this->getY() << ")";
 	return os.str();
 }
 
+//Get angle, in radians, with reference to another point
 double Point::getRadian(const Point& pt) const {
-	if (x == pt.getX()) return 2.0;
-	return atan((double)(pt.getY() - y)/(double)(pt.getX() - x));
+	if (this->getX() == pt.getX()) return 2.0; //Return 2.0 to represent undefined value
+	return atan((double)(pt.getY() - this->getY())/(double)(pt.getX() - this->getX()));
 }

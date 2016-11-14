@@ -7,8 +7,6 @@
 #ifndef VECTOR2D_H
 #define VECTOR2D_H
 
-#include <string>
-
 using namespace std;
 
 class Vector2D {
@@ -32,7 +30,8 @@ public:
 	bool operator<(const Vector2D& v) const;
 	bool operator>(const Vector2D& v) const;
 
-protected:
+private:
+	//Coordinates of vector
 	int x;
 	int y;
 };
