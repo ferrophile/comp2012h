@@ -25,8 +25,8 @@ public:
 		double angle;
 		int id;
 
-		bool operator<(const Pair &p) { return (angle < p.angle); }
-		bool operator>(const Pair &p) { return (angle > p.angle); }
+		bool operator<(const Pair &p) const { return (angle < p.angle); }
+		bool operator>(const Pair &p) const { return (angle > p.angle); }
 	};
 };
 

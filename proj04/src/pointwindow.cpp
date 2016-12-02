@@ -13,9 +13,13 @@
 #include <string>
 #include <iostream>
 
+//Default constructor
 PointWindow::PointWindow() {}
 
+//Type conversion constructor
+//Initializes filename and size
 PointWindow::PointWindow(char *filename) : file(filename), size(0) {
+	//Setup plot area and painter
 	plotArea = new QLabel;	
 	background = new QImage(600, 600, QImage::Format_RGB32);
 	painter = new QPainter(background);
@@ -32,6 +36,7 @@ PointWindow::PointWindow(char *filename) : file(filename), size(0) {
 	plotArea->setPixmap(QPixmap::fromImage(*background));
 	plotArea->show();
 
+	//Setup window layout
 	QWidget *widget = new QWidget;
 	setCentralWidget(widget);
 
@@ -48,21 +53,25 @@ PointWindow::PointWindow(char *filename) : file(filename), size(0) {
 	layout->addWidget(bottomFiller);
 	widget->setLayout(layout);
 
-	loadPoints();
-	createActions();
-	createMenus();
+	loadPoints(); //Read in points from file and draw them
+	createActions(); //Initialize actions for menu options
+	createMenus(); //Initialize the menu itself
 
 	setWindowTitle(tr("COMP2012H Project 4"));
 
 	timer = new QElapsedTimer();
 }
 
+//Destructor
 PointWindow::~PointWindow() {
 	delete background;
 	delete painter;	
 	delete timer;
 }
 
+/*-- Menu events --*/
+
+//Load Brute algorithm
 void PointWindow::loadBruteAlgo() {
 	Brute bruteObj(points);
 	timer->start();
@@ -70,6 +79,7 @@ void PointWindow::loadBruteAlgo() {
 	createMsgBox("Timer", QString::number(timer->elapsed())+" msec");
 }
 
+//Load Fast algorithm
 void PointWindow::loadFastAlgo() {
 	Fast fastObj(points);
 	timer->start();
@@ -77,14 +87,19 @@ void PointWindow::loadFastAlgo() {
 	createMsgBox("Timer", QString::number(timer->elapsed())+" msec");
 }
 
+//Quit program
 void PointWindow::exitPlotter() {
 	close();
 }
 
+//Create About message box
 void PointWindow::aboutPlotter() {
 	createMsgBox("About", "COMP2012H Proj04\nPointPlotter\nHong Wing PANG");
 }
 
+/*-- Utility functions --*/
+
+//Plot a Point in plot area
 void PointWindow::guiDrawPoint(const Point &pt) const {
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	painter->setBrush(QColor(200, 200, 200));
@@ -92,21 +107,24 @@ void PointWindow::guiDrawPoint(const Point &pt) const {
 	painter->drawEllipse(convertPoint(pt), SIZE, SIZE);
 }
 
+//Plot a line from one Point to another in plot area
 void PointWindow::guiDrawLine(const Point &pt1, const Point &pt2) const {
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	painter->setPen(QPen(Qt::black, 1));
 	painter->drawLine(convertPoint(pt1), convertPoint(pt2));
 }
 
+//Draw list of lines
 void PointWindow::paintLines(const vector< vector<Point> > &lines) const {	
 	for (int i=0; i < (int)lines.size(); i++)
 		guiDrawLine(*(lines[i].begin()), *(lines[i].end()-1));
 	for (int i=0; i < size; i++)
-		guiDrawPoint(points[i]);
+		guiDrawPoint(points[i]); //Redraw points so that it looks better lol
 	plotArea->setPixmap(QPixmap::fromImage(*background));
 	plotArea->show();
 }
 
+//Show message box
 void PointWindow::createMsgBox(QString title, QString msg) const {
 	QMessageBox msgBox;
 	msgBox.setWindowTitle(title);
@@ -114,12 +132,14 @@ void PointWindow::createMsgBox(QString title, QString msg) const {
 	msgBox.exec();
 }
 
+//Convert Point to QPointF object with coordinates scaled to fit window
 QPointF PointWindow::convertPoint(const Point &pt) const {
 	int x = pt.getX()*SCALE_X;
 	int y = WIN_Y - pt.getY()*SCALE_Y;
 	return QPointF(x, y);
 }
 
+//Read Points from file
 void PointWindow::loadPoints() {
 	ifstream fs(file);
 	string str;
@@ -142,6 +162,7 @@ void PointWindow::loadPoints() {
 	plotArea->show();
 }
 
+//Initialize actions for menu options
 void PointWindow::createActions() {
 	bruteAct = new QAction(tr("&Brute"), this);
 	bruteAct->setStatusTip(tr("Load brute algorithm"));
@@ -160,6 +181,7 @@ void PointWindow::createActions() {
 	connect(aboutAct, SIGNAL(triggered()), this, SLOT(aboutPlotter()));
 }
 
+//Initialize the menu itself
 void PointWindow::createMenus() {
 	fileMenu = menuBar()->addMenu(tr("&File"));
 	fileMenu->addAction(bruteAct);

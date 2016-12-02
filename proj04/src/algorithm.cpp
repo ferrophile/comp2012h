@@ -12,10 +12,13 @@
 
 using namespace std;
 
+//Default base class constructor
+//Used when standalone client is run
 Algorithm::Algorithm() : isStandalone(true) {
 	vector<Point> tmpList;
 	points = tmpList;
 
+	//Build list of Points by reading file from cin stream
 	string str;
 	int tmpX, tmpY;
 	getline(cin, str);
@@ -29,10 +32,16 @@ Algorithm::Algorithm() : isStandalone(true) {
 	}
 }
 
+//Type conversion base class constructor
+//Used when called from PointPlotter
 Algorithm::Algorithm(const vector<Point> list) : isStandalone(false), points(list) {}
 
+//Destructor
 Algorithm::~Algorithm() {}
 
+/*-- Member functions --*/
+
+//Print a list of Points in specified format
 void Algorithm::printLine(vector<Point> line) {
 	int size = line.size();
 	cout << size << ": ";
