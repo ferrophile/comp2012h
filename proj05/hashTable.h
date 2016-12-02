@@ -8,7 +8,6 @@
 template <typename Key, typename Value>
 class HashTable {
 	class HashElem {
-		friend class HashTable;
 	private:
 		Key _key;
 		Value _value;
@@ -18,6 +17,12 @@ class HashTable {
 		~HashElem();
 		Key getKey();
 		Value getValue();
+
+		//ostream operator, for some reason it must be inline...
+		friend std::ostream& operator<<(std::ostream& os, const HashElem& elem) {
+			os << "{" << elem._key << ", " << elem._value << "}";
+			return os;
+		}
 	};
 private:
 	int size; //no of linked lists
@@ -66,7 +71,8 @@ int HashTable<Key, Value>::getHashVal(int key) {
 
 template <typename Key, typename Value>
 int HashTable<Key, Value>::getHashVal(std::string key) {
-	//foobar
+	//think of this later lolz
+	return 0;
 }
 
 template <typename Key, typename Value>
@@ -76,10 +82,19 @@ int HashTable<Key, Value>::getSize() {
 
 template <typename Key, typename Value>
 void HashTable<Key, Value>::putElem(const Key& k, const Value& v) {
-	//typename std::list<HashElem>::iterator l;
+	typename std::list<HashElem>::iterator itr;
 	
 	HashElem elem(k, v);
-	table[getHashVal(k)].push_back(elem);
+	int val = getHashVal(k);
+	itr = table[val].begin();
+	while (itr != table[val].end() && k >= itr->getKey()) {
+		if (k == itr->getKey()) {
+			std::cout << "Error: Key already exist!";
+			return;
+		}
+		++itr;
+	}
+	table[val].insert(itr, elem);
 }
 
 template <typename Key, typename Value>
@@ -89,7 +104,7 @@ void HashTable<Key, Value>::printTable() {
 	for (int i=0; i < size; i++) {
 		std::cout << "Bucket " << i << ": ";
 		for (itr = table[i].begin(); itr != table[i].end(); ++itr)
-			std::cout << itr->getValue() << " <- ";
+			std::cout << *itr << " <- ";
 		std::cout << "NULL" << std::endl;
 	}
 }
