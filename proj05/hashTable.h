@@ -37,7 +37,7 @@ public:
 	int getHashVal(std::string);
 	
 	int getSize();
-	//HashElem getElem(HashElem elem);
+	bool getElem(Key, Value *);
 	void putElem(const Key&, const Value&);
 	void printTable();
 };
@@ -71,13 +71,38 @@ int HashTable<Key, Value>::getHashVal(int key) {
 
 template <typename Key, typename Value>
 int HashTable<Key, Value>::getHashVal(std::string key) {
-	//think of this later lolz
-	return 0;
+	int hashVal = 0, charVal = 0;
+	int prod = 1;
+	for (int i=0; i < key.length(); ++i) {
+		if (key[i] >= '0' && key[i] <= '9')
+			charVal = key[i] - '0';
+		else
+			charVal = key[i] - 'A' + 10;
+		hashVal = (charVal * prod % size + hashVal) % size;
+		prod = prod * 36 % size;
+	}
+	return hashVal;
 }
 
 template <typename Key, typename Value>
 int HashTable<Key, Value>::getSize() {
 	return size;
+}
+
+template <typename Key, typename Value>
+bool HashTable<Key, Value>::getElem(Key k, Value * v) {
+	typename std::list<HashElem>::iterator itr;
+
+	int val = getHashVal(k);
+	itr = table[val].begin();
+	while (itr != table[val].end() && k != itr->getKey()) {
+		++itr;
+	}
+	if (itr == table[val].end()) {
+		return false;
+	}
+	*v = itr->getValue();
+	return true;
 }
 
 template <typename Key, typename Value>
@@ -89,7 +114,7 @@ void HashTable<Key, Value>::putElem(const Key& k, const Value& v) {
 	itr = table[val].begin();
 	while (itr != table[val].end() && k >= itr->getKey()) {
 		if (k == itr->getKey()) {
-			std::cout << "Error: Key already exist!";
+			std::cout << "Error: Key already exist!" << std::endl;
 			return;
 		}
 		++itr;
