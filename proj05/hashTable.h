@@ -1,3 +1,10 @@
+#ifndef _HASHTABLE_H
+#define _HASHTABLE_H
+
+#include <list>
+#include <string>
+#include <iostream>
+
 template <typename Key, typename Value>
 class HashTable {
 	class HashElem {
@@ -14,7 +21,7 @@ class HashTable {
 	};
 private:
 	int size; //no of linked lists
-	list<HashElem> * table; //Array of linked lists
+	std::list<HashElem> * table; //Array of linked lists
 public:
 	HashTable();
 	HashTable(int s);
@@ -22,11 +29,12 @@ public:
 	~HashTable();
 	
 	int getHashVal(int);
-	int getHashVal(string);
+	int getHashVal(std::string);
 	
 	int getSize();
 	//HashElem getElem(HashElem elem);
-	void putElem(HashElem elem);
+	void putElem(const Key&, const Value&);
+	void printTable();
 };
 
 //HashTable class members
@@ -57,7 +65,7 @@ int HashTable<Key, Value>::getHashVal(int key) {
 }
 
 template <typename Key, typename Value>
-int HashTable<Key, Value>::getHashVal(string key) {
+int HashTable<Key, Value>::getHashVal(std::string key) {
 	//foobar
 }
 
@@ -67,11 +75,23 @@ int HashTable<Key, Value>::getSize() {
 }
 
 template <typename Key, typename Value>
-void HashTable<Key, Value>::putElem(HashElem elem) {
-	std::list<HashElem>::iterator l;
+void HashTable<Key, Value>::putElem(const Key& k, const Value& v) {
+	//typename std::list<HashElem>::iterator l;
 	
-	int val = getHashVal(elem.getKey());
-	table[val]->push_back(elem);
+	HashElem elem(k, v);
+	table[getHashVal(k)].push_back(elem);
+}
+
+template <typename Key, typename Value>
+void HashTable<Key, Value>::printTable() {
+	typename std::list<HashElem>::iterator itr;
+
+	for (int i=0; i < size; i++) {
+		std::cout << "Bucket " << i << ": ";
+		for (itr = table[i].begin(); itr != table[i].end(); ++itr)
+			std::cout << itr->getValue() << " <- ";
+		std::cout << "NULL" << std::endl;
+	}
 }
 
 //HashElem class members
@@ -97,3 +117,5 @@ Value HashTable<Key, Value>::HashElem::getValue() {
 }
 
 //perform validation here later
+
+#endif
