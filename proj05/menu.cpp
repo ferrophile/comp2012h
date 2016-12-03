@@ -22,6 +22,7 @@ void Menu::addChild(std::string d, Menu* m) {
 
 void Menu::show() {
 	std::vector<MenuItem>::iterator itr;
+	std::string input;
 	int count = 1;
 	int option = 0;
 
@@ -30,14 +31,16 @@ void Menu::show() {
 		std::cout << "-";
 	std::cout << std::endl;
 
-	for(itr = items.begin(); itr != items.end(); ++itr) {
+	for (itr = items.begin(); itr != items.end(); ++itr) {
 		std::cout << count << ": ";
 		std::cout << itr->desc << std::endl;
 		count++;
 	}
 
-	std::cout << "Select your option: ";
-	std::cin >> option;
+	std::cout << "Select your option [1-" << size << "]: ";
+	//std::cin >> option;
+	std::getline(std::cin, input);
+	option = std::stoi(input);
 	std::cout << std::endl;
 
 	items[--option].action();

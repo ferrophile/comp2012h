@@ -21,15 +21,15 @@ public:
 	~Register();
 
 	//Actions
-	static void studentAddEntry();
-	//static void studentModifyEntry();
-	//static void studentDeleteEntry();
-	//static void studentQueryEntry();
+	void studentInsertEntry();
+	void studentModifyEntry();
+	//void studentDeleteEntry();
+	//void studentQueryEntry();
 
-	static bool validateStuID(std::string input, int* res);
+	bool validateStuID(std::string input, int* res);
 
-	static void debug();
-	static void foobar();
+	void debug();
+	void foobar();
 };
 
 #endif

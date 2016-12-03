@@ -17,6 +17,8 @@ class HashTable {
 		~HashElem();
 		Key getKey();
 		Value getValue();
+		void setKey(const Key&);
+		void setValue(const Value&);
 
 		//ostream operator, for some reason it must be inline...
 		friend std::ostream& operator<<(std::ostream& os, const HashElem& elem) {
@@ -38,6 +40,7 @@ public:
 	
 	int getSize();
 	bool getElem(Key, Value *);
+	bool removeElem(Key, Value *);
 	void putElem(const Key&, const Value&);
 	void printTable();
 };
@@ -106,6 +109,23 @@ bool HashTable<Key, Value>::getElem(Key k, Value * v) {
 }
 
 template <typename Key, typename Value>
+bool HashTable<Key, Value>::removeElem(Key k, Value * v) {
+	typename std::list<HashElem>::iterator itr;
+
+	int val = getHashVal(k);
+	itr = table[val].begin();
+	while (itr != table[val].end() && k != itr->getKey()) {
+		++itr;
+	}
+	if (itr == table[val].end()) {
+		return false;
+	}
+	*v = itr->getValue();
+	table[val].erase(itr);
+	return true;
+}
+
+template <typename Key, typename Value>
 void HashTable<Key, Value>::putElem(const Key& k, const Value& v) {
 	typename std::list<HashElem>::iterator itr;
 	
@@ -156,6 +176,14 @@ Value HashTable<Key, Value>::HashElem::getValue() {
 	return _value;
 }
 
-//perform validation here later
+template <typename Key, typename Value>
+void HashTable<Key, Value>::HashElem::setKey(const Key& k) {
+	_key = k;
+}
+
+template <typename Key, typename Value>
+void HashTable<Key, Value>::HashElem::setValue(const Value& v) {
+	_value = v;
+}
 
 #endif
