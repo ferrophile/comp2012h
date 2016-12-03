@@ -13,13 +13,16 @@ class Menu {
 	};
 private:
 	int size;
+	std::string title;
 	std::vector<struct MenuItem> items;
 	static Menu* activeMenu;
 public:
 	Menu();
+	Menu(std::string t);
 	~Menu();
 
 	void addItem(std::string d, std::function<void()> a);
+	void addChild(std::string d, Menu* m);
 	void show();
 
 	static void setActiveMenu(Menu* m);

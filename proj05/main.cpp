@@ -1,20 +1,6 @@
 #include <string>
 #include <iostream>
-#include "hashTable.h"
-#include "student.h"
-#include "menu.h"
-
-HashTable<int, Student> student(29);
-HashTable<std::string, std::string> course(17);
-
-void test() {
-	std::cout << "Hello!" << std::endl;
-}
-
-void test2() {
-	std::cout << "Hello World!" << std::endl;
-}
-
+#include "register.h"
 
 int main(int argc, char** argv) {
 	/*
@@ -40,18 +26,8 @@ int main(int argc, char** argv) {
 
 	course.printTable();
 	*/
-
-	Menu rootMenu;
-	Menu studentMenu;
-
-	rootMenu.addItem("Student List management", test);
-	rootMenu.addItem("Course List management", std::bind(Menu::setActiveMenu, &studentMenu));
-
-	studentMenu.addItem("Test", test2);
-	studentMenu.addItem("Back", std::bind(Menu::setActiveMenu, &rootMenu));
+	Register r;
 	
-	Menu::setActiveMenu(&rootMenu);
-
 	while(true) {
 		Menu::showActiveMenu();
 	}
