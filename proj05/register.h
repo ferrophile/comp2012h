@@ -20,8 +20,16 @@ public:
 	Register();
 	~Register();
 
-	static void test();
-	static void test2();
+	//Actions
+	static void studentAddEntry();
+	//static void studentModifyEntry();
+	//static void studentDeleteEntry();
+	//static void studentQueryEntry();
+
+	static bool validateStuID(std::string input, int* res);
+
+	static void debug();
+	static void foobar();
 };
 
 #endif

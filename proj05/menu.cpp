@@ -36,7 +36,7 @@ void Menu::show() {
 		count++;
 	}
 
-	std::cout << "Select your option:" << std::endl;
+	std::cout << "Select your option: ";
 	std::cin >> option;
 	std::cout << std::endl;
 

@@ -10,19 +10,20 @@ class Student {
 private:
 	std::string _name;
 	int _year;
-	char _gender;
+	std::string _gender;
 public:
 	Student();
-	Student(std::string, int, char);
+	Student(std::string, int, std::string);
 	~Student();
 
 	bool setName(std::string);
 	bool setYear(int);
-	bool setGender(char);
+	bool setYear(std::string);
+	bool setGender(std::string);
 
 	std::string getName();
 	int getYear();
-	char getGender();
+	std::string getGender();
 
 	friend std::ostream& operator<< (std::ostream& os, const Student& stud);
 };

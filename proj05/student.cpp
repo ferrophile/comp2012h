@@ -1,9 +1,9 @@
 #include "student.h"
 
 Student::Student()
-: _name(""), _year(0), _gender(' ') {}
+: _name(""), _year(0), _gender("") {}
 
-Student::Student(std::string name, int year, char gender) {
+Student::Student(std::string name, int year, std::string gender) {
 	if (!setName(name) || !setYear(year) || !setGender(gender)) {
 		Student();
 	}
@@ -26,8 +26,18 @@ bool Student::setYear(int year) {
 	return true;
 }
 
-bool Student::setGender(char gender) {
-	if (gender != 'M' && gender != 'F')
+bool Student::setYear(std::string year) {
+	int temp = 0;
+	try {
+		temp = std::stoi(year);
+	} catch (...) {
+		return false;
+	}
+	setYear(temp);
+}
+
+bool Student::setGender(std::string gender) {
+	if (gender != "M" && gender != "F")
 		return false;
 	_gender = gender;
 	return true;
@@ -41,7 +51,7 @@ int Student::getYear() {
 	return _year;
 }
 
-char Student::getGender() {
+std::string Student::getGender() {
 	return _gender;
 }
 
