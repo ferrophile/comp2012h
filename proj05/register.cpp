@@ -4,11 +4,12 @@ Register::Register()
 :	student(29), 
 	course(17),
 	rootMenu("HKUST Course Registation System"),
-	studentMenu("Student Menu")
+	studentMenu("Student Menu"),
+	courseMenu("Course Menu")
 	{
 	
 	rootMenu.addChild("Student Management", &studentMenu);
-	rootMenu.addItem("Course Management", std::bind(&Register::foobar, this));
+	rootMenu.addChild("Course Management", &courseMenu);
 	rootMenu.addItem("Course Registration", std::bind(&Register::foobar, this));
 	rootMenu.addItem("Report Management", std::bind(&Register::foobar, this));
 	rootMenu.addItem("File Management", std::bind(&Register::foobar, this));
@@ -17,8 +18,12 @@ Register::Register()
 	studentMenu.addItem("Insert Student Record", std::bind(&Register::studentInsertEntry, this));
 	studentMenu.addItem("Modify Student Record", std::bind(&Register::studentModifyEntry, this));
 	studentMenu.addItem("Delete Student Record", std::bind(&Register::studentDeleteEntry, this));
+	studentMenu.addItem("Query Student Record", std::bind(&Register::studentQueryEntry, this));
 	studentMenu.addItem("Debug", std::bind(&Register::debug, this));
 	studentMenu.addChild("Back to main menu", &rootMenu);
+
+	courseMenu.addItem("Insert Course Record", std::bind(&Register::studentInsertEntry, this));
+	courseMenu.addChild("Back to main menu", &rootMenu);
 
 	Menu::setActiveMenu(&rootMenu);
 }
@@ -33,14 +38,12 @@ void Register::studentInsertEntry() {
 	parseStuID(&stuID);
 
 	//check if student already exists here
-	/*
 	Student temp;
-	if (student.getElem(stuID, &temp)) {
+	if (student.checkElem(stuID, &temp)) {
 		std::cout << "Student already exist: " << temp << std::endl;
 		std::cout << std::endl;
 		return;
 	}
-	*/
 
 	std::cout << "Enter the student name: ";
 	parseStuName(stud);
@@ -94,6 +97,27 @@ void Register::studentDeleteEntry() {
 	}
 
 	std::cout << "Deletion of student record successful" << std::endl;
+	std::cout << std::endl;
+}
+
+void Register::studentQueryEntry() {
+	int stuID = 0;
+
+	std::cout << "Enter the student ID: ";
+	parseStuID(&stuID);
+
+	Student stud;
+	if (!student.checkElem(stuID, &stud)) {
+		std::cout << "Student does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	std::cout << std::endl;
+	std::cout << "ID:\t" << stuID << std::endl;
+	std::cout << "Name:\t" << stud.getName() << std::endl;
+	std::cout << "Year:\t" << stud.getYear() << std::endl;
+	std::cout << "Gender:\t" << stud.getGender() << std::endl;
 	std::cout << std::endl;
 }
 

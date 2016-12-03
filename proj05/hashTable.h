@@ -6,29 +6,36 @@
 #include <iostream>
 
 template <typename Key, typename Value>
-class HashTable {
-	class HashElem {
-	private:
-		Key _key;
-		Value _value;
-	public:
-		HashElem();
-		HashElem(const Key&, const Value&);
-		~HashElem();
-		Key getKey();
-		Value getValue();
-		void setKey(const Key&);
-		void setValue(const Value&);
+class HashElem {
+private:
+	Key _key;
+	Value _value;
+public:
+	HashElem();
+	HashElem(const Key&, const Value&);
+	~HashElem();
+	Key getKey();
+	Value getValue();
+	void setKey(const Key&);
+	void setValue(const Value&);
 
-		//ostream operator, for some reason it must be inline...
-		friend std::ostream& operator<<(std::ostream& os, const HashElem& elem) {
-			os << "{" << elem._key << ", " << elem._value << "}";
-			return os;
-		}
-	};
+	//ostream operator, for some reason it must be inline...
+	friend std::ostream& operator<<(std::ostream& os, const HashElem& elem) {
+		os << "{" << elem._key << ", " << elem._value << "}";
+		return os;
+	}
+};
+
+template <typename Key, typename Value>
+using hashElemIterator = typename std::list< HashElem<Key, Value> >::iterator;
+
+template <typename Key, typename Value>
+class HashTable {
 private:
 	int size; //no of linked lists
-	std::list<HashElem> * table; //Array of linked lists
+	std::list< HashElem<Key, Value> > * table; //Array of linked lists
+
+	hashElemIterator<Key, Value> getElem(Key k, Value * v = 0);
 public:
 	HashTable();
 	HashTable(int s);
@@ -39,7 +46,7 @@ public:
 	int getHashVal(std::string);
 	
 	int getSize();
-	bool getElem(Key k, Value * v = 0);
+	bool checkElem(Key k, Value * v = 0);
 	bool removeElem(Key k, Value * v = 0);
 	void putElem(const Key&, const Value&);
 	void printTable();
@@ -52,7 +59,7 @@ HashTable<Key, Value>::HashTable() : size(0) {}
 
 template <typename Key, typename Value>
 HashTable<Key, Value>::HashTable(int s) : size(s) {
-	table = new std::list<HashElem>[size];
+	table = new std::list< HashElem<Key, Value> >[size];
 }
 
 /*
@@ -93,45 +100,44 @@ int HashTable<Key, Value>::getSize() {
 }
 
 template <typename Key, typename Value>
-bool HashTable<Key, Value>::getElem(Key k, Value * v) {
-	typename std::list<HashElem>::iterator itr;
+hashElemIterator<Key, Value> HashTable<Key, Value>::getElem(Key k, Value * v) {
+	hashElemIterator<Key, Value> itr;
 
 	int val = getHashVal(k);
 	itr = table[val].begin();
 	while (itr != table[val].end() && k != itr->getKey()) {
 		++itr;
 	}
-	if (itr == table[val].end()) {
-		return false;
-	}
-	if (v)
+	if (itr != table[val].end() && v) {
 		*v = itr->getValue();
-	return true;
+	}
+	return itr;
+}
+
+template <typename Key, typename Value>
+bool HashTable<Key, Value>::checkElem(Key k, Value * v) {
+	hashElemIterator<Key, Value> itr = getElem(k, v);
+
+	int val = getHashVal(k);
+	return itr != table[val].end();
 }
 
 template <typename Key, typename Value>
 bool HashTable<Key, Value>::removeElem(Key k, Value * v) {
-	typename std::list<HashElem>::iterator itr;
+	hashElemIterator<Key, Value> itr = getElem(k, v);
 
 	int val = getHashVal(k);
-	itr = table[val].begin();
-	while (itr != table[val].end() && k != itr->getKey()) {
-		++itr;
-	}
-	if (itr == table[val].end()) {
-		return false;
-	}
-	if (v)
-		*v = itr->getValue();
+	if (itr == table[val].end())
+		return false; 
 	table[val].erase(itr);
 	return true;
 }
 
 template <typename Key, typename Value>
 void HashTable<Key, Value>::putElem(const Key& k, const Value& v) {
-	typename std::list<HashElem>::iterator itr;
+	hashElemIterator<Key, Value> itr;
 	
-	HashElem elem(k, v);
+	HashElem<Key, Value> elem(k, v);
 	int val = getHashVal(k);
 	itr = table[val].begin();
 	while (itr != table[val].end() && k >= itr->getKey()) {
@@ -146,7 +152,7 @@ void HashTable<Key, Value>::putElem(const Key& k, const Value& v) {
 
 template <typename Key, typename Value>
 void HashTable<Key, Value>::printTable() {
-	typename std::list<HashElem>::iterator itr;
+	hashElemIterator<Key, Value> itr;
 
 	for (int i=0; i < size; i++) {
 		std::cout << "Bucket " << i << ": ";
@@ -159,32 +165,32 @@ void HashTable<Key, Value>::printTable() {
 //HashElem class members
 
 template <typename Key, typename Value>
-HashTable<Key, Value>::HashElem::HashElem() {}
+HashElem<Key, Value>::HashElem() {}
 
 template <typename Key, typename Value>
-HashTable<Key, Value>::HashElem::HashElem(const Key& k, const Value& v)
+HashElem<Key, Value>::HashElem(const Key& k, const Value& v)
 : _key(k), _value(v) {}
 
 template <typename Key, typename Value>
-HashTable<Key, Value>::HashElem::~HashElem() {}
+HashElem<Key, Value>::~HashElem() {}
 
 template <typename Key, typename Value>
-Key HashTable<Key, Value>::HashElem::getKey() {
+Key HashElem<Key, Value>::getKey() {
 	return _key;
 }
 
 template <typename Key, typename Value>
-Value HashTable<Key, Value>::HashElem::getValue() {
+Value HashElem<Key, Value>::getValue() {
 	return _value;
 }
 
 template <typename Key, typename Value>
-void HashTable<Key, Value>::HashElem::setKey(const Key& k) {
+void HashElem<Key, Value>::setKey(const Key& k) {
 	_key = k;
 }
 
 template <typename Key, typename Value>
-void HashTable<Key, Value>::HashElem::setValue(const Value& v) {
+void HashElem<Key, Value>::setValue(const Value& v) {
 	_value = v;
 }
 

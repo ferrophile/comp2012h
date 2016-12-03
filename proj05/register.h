@@ -24,7 +24,7 @@ public:
 	void studentInsertEntry();
 	void studentModifyEntry();
 	void studentDeleteEntry();
-	//void studentQueryEntry();
+	void studentQueryEntry();
 
 	void parseStuID(int* stuID);
 	void parseStuName(Student& s);
