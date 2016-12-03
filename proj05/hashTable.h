@@ -39,8 +39,8 @@ public:
 	int getHashVal(std::string);
 	
 	int getSize();
-	bool getElem(Key, Value *);
-	bool removeElem(Key, Value *);
+	bool getElem(Key k, Value * v = 0);
+	bool removeElem(Key k, Value * v = 0);
 	void putElem(const Key&, const Value&);
 	void printTable();
 };
@@ -104,7 +104,8 @@ bool HashTable<Key, Value>::getElem(Key k, Value * v) {
 	if (itr == table[val].end()) {
 		return false;
 	}
-	*v = itr->getValue();
+	if (v)
+		*v = itr->getValue();
 	return true;
 }
 
@@ -120,7 +121,8 @@ bool HashTable<Key, Value>::removeElem(Key k, Value * v) {
 	if (itr == table[val].end()) {
 		return false;
 	}
-	*v = itr->getValue();
+	if (v)
+		*v = itr->getValue();
 	table[val].erase(itr);
 	return true;
 }

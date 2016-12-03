@@ -16,6 +16,7 @@ Register::Register()
 
 	studentMenu.addItem("Insert Student Record", std::bind(&Register::studentInsertEntry, this));
 	studentMenu.addItem("Modify Student Record", std::bind(&Register::studentModifyEntry, this));
+	studentMenu.addItem("Delete Student Record", std::bind(&Register::studentDeleteEntry, this));
 	studentMenu.addItem("Debug", std::bind(&Register::debug, this));
 	studentMenu.addChild("Back to main menu", &rootMenu);
 
@@ -25,55 +26,28 @@ Register::Register()
 Register::~Register() {}
 
 void Register::studentInsertEntry() {
-	std::string input;
-	bool state;
-
 	int stuID = 0;
 	Student stud;
 
-	state = false;
 	std::cout << "Enter the student ID: ";
-	do {
-		std::getline(std::cin, input);
-		state = validateStuID(input, &stuID);
-		if (!state)
-			std::cout << "Invalid input, enter again [student ID]: ";
-	} while (!state);
+	parseStuID(&stuID);
 
 	//check if student already exists here
+	/*
 	Student temp;
 	if (student.getElem(stuID, &temp)) {
 		std::cout << "Student already exist: " << temp << std::endl;
 		std::cout << std::endl;
 		return;
 	}
+	*/
 
-	state = false;
 	std::cout << "Enter the student name: ";
-	do {
-		std::getline(std::cin, input);
-		state = stud.setName(input);
-		if (!state)
-			std::cout << "Invalid input, enter again [student name]: ";
-	} while (!state);
-	
-	state = false;
+	parseStuName(stud);
 	std::cout << "Enter the student year [1-4]: ";
-	do {
-		std::getline(std::cin, input);
-		state = stud.setYear(input);
-		if (!state)
-			std::cout << "Invalid input, enter again [student year]: ";
-	} while (!state);
-	
-	state = false;
+	parseStuYear(stud);
 	std::cout << "Enter the student gender [M,F]: ";
-	do {
-		std::getline(std::cin, input);
-		state = stud.setGender(input);
-		if (!state)
-			std::cout << "Invalid input, enter again [M, F]: ";
-	} while (!state);
+	parseStuGender(stud);
 
 	student.putElem(stuID, stud);
 
@@ -82,20 +56,11 @@ void Register::studentInsertEntry() {
 }
 
 void Register::studentModifyEntry() {
-	std::string input;
-	bool state;
-
 	int stuID = 0;
 	Student stud;
 
-	state = false;
 	std::cout << "Enter the student ID: ";
-	do {
-		std::getline(std::cin, input);
-		state = validateStuID(input, &stuID);
-		if (!state)
-			std::cout << "Invalid input, enter again [student ID]: ";
-	} while (!state);
+	parseStuID(&stuID);
 
 	if (!student.removeElem(stuID, &stud)) {
 		std::cout << "Student does not exist!" << std::endl;
@@ -103,37 +68,78 @@ void Register::studentModifyEntry() {
 		return;
 	}
 
-	state = false;
 	std::cout << "Enter the student name [" << stud.getName() << "]: ";
-	do {
-		std::getline(std::cin, input);
-		state = stud.setName(input);
-		if (!state)
-			std::cout << "Invalid input, enter again [student name]: ";
-	} while (!state);
-	
-	state = false;
+	parseStuName(stud);
 	std::cout << "Enter the student year [" << stud.getYear() << "]: ";
-	do {
-		std::getline(std::cin, input);
-		state = stud.setYear(input);
-		if (!state)
-			std::cout << "Invalid input, enter again [student year]: ";
-	} while (!state);
-	
-	state = false;
+	parseStuYear(stud);
 	std::cout << "Enter the student gender [" << stud.getGender() << "]: ";
-	do {
-		std::getline(std::cin, input);
-		state = stud.setGender(input);
-		if (!state)
-			std::cout << "Invalid input, enter again [M, F]: ";
-	} while (!state);
+	parseStuGender(stud);
 
 	student.putElem(stuID, stud);
 
 	std::cout << "Modification of student record successful" << std::endl;
 	std::cout << std::endl;
+}
+
+void Register::studentDeleteEntry() {
+	int stuID = 0;
+
+	std::cout << "Enter the student ID: ";
+	parseStuID(&stuID);
+
+	if (!student.removeElem(stuID)) {
+		std::cout << "Student does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	std::cout << "Deletion of student record successful" << std::endl;
+	std::cout << std::endl;
+}
+
+
+void Register::parseStuID(int* stuID) {
+	std::string input;
+	bool state = false;
+	do {
+		std::getline(std::cin, input);
+		state = validateStuID(input, stuID);
+		if (!state)
+			std::cout << "Invalid input, enter again [student ID]: ";
+	} while (!state);
+}
+
+void Register::parseStuName(Student& s) {
+	std::string input;
+	bool state = false;
+	do {
+		std::getline(std::cin, input);
+		state = s.setName(input);
+		if (!state)
+			std::cout << "Invalid input, enter again [student name]: ";
+	} while (!state);
+}
+
+void Register::parseStuYear(Student& s) {
+	std::string input;
+	bool state = false;
+	do {
+		std::getline(std::cin, input);
+		state = s.setYear(input);
+		if (!state)
+			std::cout << "Invalid input, enter again [student year]: ";
+	} while (!state);
+}
+
+void Register::parseStuGender(Student& s) {
+	std::string input;
+	bool state = false;
+	do {
+		std::getline(std::cin, input);
+		state = s.setGender(input);
+		if (!state)
+			std::cout << "Invalid input, enter again [M, F]: ";
+	} while (!state);
 }
 
 bool Register::validateStuID(std::string input, int* res) {

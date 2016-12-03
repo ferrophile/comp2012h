@@ -23,8 +23,13 @@ public:
 	//Actions
 	void studentInsertEntry();
 	void studentModifyEntry();
-	//void studentDeleteEntry();
+	void studentDeleteEntry();
 	//void studentQueryEntry();
+
+	void parseStuID(int* stuID);
+	void parseStuName(Student& s);
+	void parseStuYear(Student& s);
+	void parseStuGender(Student& s);
 
 	bool validateStuID(std::string input, int* res);
 
