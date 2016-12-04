@@ -22,7 +22,11 @@ Register::Register()
 	studentMenu.addItem("Debug", std::bind(&Register::debug, this));
 	studentMenu.addChild("Back to main menu", &rootMenu);
 
-	courseMenu.addItem("Insert Course Record", std::bind(&Register::studentInsertEntry, this));
+	courseMenu.addItem("Insert Course Record", std::bind(&Register::courseInsertEntry, this));
+	courseMenu.addItem("Modify Course Record", std::bind(&Register::courseModifyEntry, this));
+	courseMenu.addItem("Delete Course Record", std::bind(&Register::courseDeleteEntry, this));
+	courseMenu.addItem("Query Course Record", std::bind(&Register::courseQueryEntry, this));
+	courseMenu.addItem("Debug", std::bind(&Register::debug, this));
 	courseMenu.addChild("Back to main menu", &rootMenu);
 
 	Menu::setActiveMenu(&rootMenu);
@@ -65,7 +69,7 @@ void Register::studentModifyEntry() {
 	std::cout << "Enter the student ID: ";
 	parseStuID(&stuID);
 
-	if (!student.removeElem(stuID, &stud)) {
+	if (!student.checkElem(stuID, &stud)) {
 		std::cout << "Student does not exist!" << std::endl;
 		std::cout << std::endl;
 		return;
@@ -78,7 +82,7 @@ void Register::studentModifyEntry() {
 	std::cout << "Enter the student gender [" << stud.getGender() << "]: ";
 	parseStuGender(stud);
 
-	student.putElem(stuID, stud);
+	student.setElem(stud, stuID);
 
 	std::cout << "Modification of student record successful" << std::endl;
 	std::cout << std::endl;
@@ -121,6 +125,91 @@ void Register::studentQueryEntry() {
 	std::cout << std::endl;
 }
 
+void Register::courseInsertEntry() {
+	std::string corID;
+	Course cor;
+
+	std::cout << "Enter the course ID: ";
+	parseCourseID(&corID);
+
+	//check if course already exists here
+	Course temp;
+	if (course.checkElem(corID, &temp)) {
+		std::cout << "Course already exist: " << temp << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	std::cout << "Enter the course name: ";
+	parseCourseName(cor);
+	std::cout << "Enter the no. of credits [0-5]: ";
+	parseCourseCredit(cor);
+
+	course.putElem(corID, cor);
+
+	std::cout << "Creation of course record successful" << std::endl;
+	std::cout << std::endl;
+}
+
+void Register::courseModifyEntry() {
+	std::string corID;
+	Course cor;
+
+	std::cout << "Enter the course ID: ";
+	parseCourseID(&corID);
+
+	if (!course.checkElem(corID, &cor)) {
+		std::cout << "Course does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	std::cout << "Enter the course name [" << cor.getName() << "]: ";
+	parseCourseName(cor);
+	std::cout << "Enter the no. of credits [" << cor.getCredit() << "]: ";
+	parseCourseCredit(cor);
+
+	course.setElem(cor, corID);
+
+	std::cout << "Modification of course record successful" << std::endl;
+	std::cout << std::endl;
+}
+
+void Register::courseDeleteEntry() {
+	std::string corID;
+
+	std::cout << "Enter the course ID: ";
+	parseCourseID(&corID);
+
+	if (!course.removeElem(corID)) {
+		std::cout << "Course does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	std::cout << "Deletion of course record successful" << std::endl;
+	std::cout << std::endl;
+}
+
+void Register::courseQueryEntry() {
+	std::string corID;
+
+	std::cout << "Enter the course ID: ";
+	parseCourseID(&corID);
+
+	Course cor;
+	if (!course.checkElem(corID, &cor)) {
+		std::cout << "Course does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	std::cout << std::endl;
+	std::cout << "Code:\t" << corID << std::endl;
+	std::cout << "Name:\t" << cor.getName() << std::endl;
+	std::cout << "Credit:\t" << cor.getCredit() << std::endl;
+	std::cout << std::endl;
+}
 
 void Register::parseStuID(int* stuID) {
 	std::string input;
@@ -166,6 +255,39 @@ void Register::parseStuGender(Student& s) {
 	} while (!state);
 }
 
+void Register::parseCourseID(std::string* courseID) {
+	std::string input;
+	bool state = false;
+	do {
+		std::getline(std::cin, input);
+		state = validateCourseID(input, courseID);
+		if (!state)
+			std::cout << "Invalid input, enter again [course ID]: ";
+	} while (!state);
+}
+
+void Register::parseCourseName(Course& c) {
+	std::string input;
+	bool state = false;
+	do {
+		std::getline(std::cin, input);
+		state = c.setName(input);
+		if (!state)
+			std::cout << "Invalid input, enter again [course name]: ";
+	} while (!state);
+}
+
+void Register::parseCourseCredit(Course& c) {
+	std::string input;
+	bool state = false;
+	do {
+		std::getline(std::cin, input);
+		state = c.setCredit(input);
+		if (!state)
+			std::cout << "Invalid input, enter again [course credits]: ";
+	} while (!state);
+}
+
 bool Register::validateStuID(std::string input, int* res) {
 	int temp = 0;
 
@@ -179,8 +301,30 @@ bool Register::validateStuID(std::string input, int* res) {
 	return true;
 }
 
+bool Register::validateCourseID(std::string input, std::string* res) {
+	int len = input.length();
+	int i = 0;
+
+	if (len == 8 || len == 9) {
+		while (i < len) {
+			input[i] = std::toupper(input[i]);
+			if (i < 4 && (input[i] < 'A' || input[i] > 'Z'))
+				break;
+			if ((i >= 4 && i < 8) && (input[i] < '0' || input[i] > '9'))
+				break;
+			i++;
+		}
+	}
+	if (i == len) {
+		*res = input;
+		return true;
+	}
+	return false;
+}
+
 void Register::debug() {
-	student.printTable();
+	//student.printTable();
+	course.printTable();
 	std::cout << std::endl;
 }
 void Register::foobar() {

@@ -47,6 +47,7 @@ public:
 	
 	int getSize();
 	bool checkElem(Key k, Value * v = 0);
+	bool setElem(Value& newVal, Key k, Value * v = 0);
 	bool removeElem(Key k, Value * v = 0);
 	void putElem(const Key&, const Value&);
 	void printTable();
@@ -120,6 +121,16 @@ bool HashTable<Key, Value>::checkElem(Key k, Value * v) {
 
 	int val = getHashVal(k);
 	return itr != table[val].end();
+}
+
+template <typename Key, typename Value>
+bool HashTable<Key, Value>::setElem(Value& newVal, Key k, Value * v) {
+	hashElemIterator<Key, Value> itr = getElem(k, v);
+
+	int val = getHashVal(k);
+	if (itr == table[val].end())
+		return false; 
+	itr->setValue(newVal);
 }
 
 template <typename Key, typename Value>

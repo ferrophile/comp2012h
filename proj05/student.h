@@ -1,7 +1,7 @@
 #ifndef _STUDENT_H
 #define _STUDENT_H
 
-#define NAME_LEN_LIMIT 32
+#define STUD_NAME_LEN_LIMIT 32
 
 #include <string>
 #include <iostream>
@@ -21,11 +21,12 @@ public:
 	bool setYear(std::string);
 	bool setGender(std::string);
 
-	std::string getName();
-	int getYear();
-	std::string getGender();
+	std::string getName() const;
+	int getYear() const;
+	std::string getGender() const;
 
-	friend std::ostream& operator<< (std::ostream& os, const Student& stud);
+	Student& operator=(const Student&);
+	friend std::ostream& operator<<(std::ostream& os, const Student& stud);
 };
 
 #endif

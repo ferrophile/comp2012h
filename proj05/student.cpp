@@ -13,7 +13,7 @@ Student::~Student() {}
 
 bool Student::setName(std::string name) {
 	int len = name.length();
-	if (len < 1 || len > NAME_LEN_LIMIT)
+	if (len < 1 || len > STUD_NAME_LEN_LIMIT)
 		return false;
 	_name = name;
 	return true;
@@ -43,19 +43,25 @@ bool Student::setGender(std::string gender) {
 	return true;
 }
 
-std::string Student::getName() {
+std::string Student::getName() const {
 	return _name;
 }
 
-int Student::getYear() {
+int Student::getYear() const {
 	return _year;
 }
 
-std::string Student::getGender() {
+std::string Student::getGender() const {
 	return _gender;
 }
 
-std::ostream& operator<< (std::ostream& os, const Student& stud) {
+Student& Student::operator=(const Student& s) {
+	_name = s.getName();
+	_year = s.getYear();
+	_gender = s.getGender();
+}
+
+std::ostream& operator<<(std::ostream& os, const Student& stud) {
 	os << stud._name << ", ";
 	os << stud._year << ", ";
 	os << stud._gender;
