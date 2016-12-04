@@ -1,16 +1,19 @@
 #include "register.h"
 
 Register::Register()
-:	student(29), 
-	course(17),
+:	student(STUD_BUCKET_NO), 
+	course(COR_BUCKET_NO),
+	studentFinder(STUD_BUCKET_NO),
+	courseFinder(COR_BUCKET_NO),
 	rootMenu("HKUST Course Registation System"),
 	studentMenu("Student Menu"),
-	courseMenu("Course Menu")
+	courseMenu("Course Menu"),
+	regCourseMenu("Registration Menu")
 	{
 	
 	rootMenu.addChild("Student Management", &studentMenu);
 	rootMenu.addChild("Course Management", &courseMenu);
-	rootMenu.addItem("Course Registration", std::bind(&Register::foobar, this));
+	rootMenu.addChild("Course Registration", &regCourseMenu);
 	rootMenu.addItem("Report Management", std::bind(&Register::foobar, this));
 	rootMenu.addItem("File Management", std::bind(&Register::foobar, this));
 	rootMenu.addItem("Exit", std::bind(&Register::foobar, this));
@@ -28,6 +31,10 @@ Register::Register()
 	courseMenu.addItem("Query Course Record", std::bind(&Register::courseQueryEntry, this));
 	courseMenu.addItem("Debug", std::bind(&Register::debug, this));
 	courseMenu.addChild("Back to main menu", &rootMenu);
+
+	regCourseMenu.addItem("Add Course", std::bind(&Register::recordAddCourse, this));
+	regCourseMenu.addItem("Drop Course", std::bind(&Register::recordDropCourse, this));
+	regCourseMenu.addChild("Back to main menu", &rootMenu);
 
 	Menu::setActiveMenu(&rootMenu);
 }
@@ -211,6 +218,50 @@ void Register::courseQueryEntry() {
 	std::cout << std::endl;
 }
 
+void Register::recordAddCourse() {
+	int stuID = 0;
+	std::string corID;
+	recordIterator itr;
+
+	std::cout << "Enter the student ID: ";
+	parseStuID(&stuID);
+	std::cout << "Enter the course ID: ";
+	parseCourseID(&corID);
+
+	Record record(stuID, corID);
+	itr = records.begin();
+	while (itr != records.end() && record >= *itr) {
+		if (record == *itr) {
+			std::cout << "Course already registered!" << std::endl;
+			return;
+		}
+		itr++;
+	}
+	itr = records.insert(itr, record);
+
+	studentFinder.putElem(stuID, itr);
+	courseFinder.putElem(corID, itr);
+
+	std::cout << "Course successfully added" << std::endl;
+	std::cout << std::endl;
+}
+
+void Register::recordDropCourse() {
+	int stuID = 0;
+	std::string corID;
+	std::vector<recordIterator>::iterator itr;
+
+	std::cout << "Enter the student ID: ";
+	parseStuID(&stuID);
+
+	std::vector<recordIterator> results = studentFinder.getElemList(stuID);
+	for (itr = results.begin(); itr != results.end(); ++itr) {
+		std::cout << (*itr)->getCorID() << std::endl;
+	}
+}
+
+/*--Parsers, may move them to another file later--*/
+
 void Register::parseStuID(int* stuID) {
 	std::string input;
 	bool state = false;
@@ -324,7 +375,8 @@ bool Register::validateCourseID(std::string input, std::string* res) {
 
 void Register::debug() {
 	//student.printTable();
-	course.printTable();
+	//course.printTable();
+	studentFinder.printTable();
 	std::cout << std::endl;
 }
 void Register::foobar() {

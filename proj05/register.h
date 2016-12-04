@@ -3,20 +3,30 @@
 
 #include <string>
 #include "hashTable.h"
-#include "student.h"
-#include "course.h"
+#include "registerEntities.h"
 #include "menu.h"
+
+#define STUD_BUCKET_NO 29
+#define COR_BUCKET_NO 17
+
+typedef std::list<Record>::iterator recordIterator;
 
 class Register {
 private:
 	//Hash tables
 	HashTable<int, Student> student;
 	HashTable<std::string, Course> course;
+	HashTable<int, recordIterator> studentFinder;
+	HashTable<std::string, recordIterator> courseFinder;
+
+	//List
+	std::list<Record> records;
 
 	//Menus
 	Menu rootMenu;
 	Menu studentMenu;
 	Menu courseMenu;
+	Menu regCourseMenu;
 public:
 	Register();
 	~Register();
@@ -31,6 +41,9 @@ public:
 	void courseModifyEntry();
 	void courseDeleteEntry();
 	void courseQueryEntry();
+
+	void recordAddCourse();
+	void recordDropCourse();
 
 	//Parsers
 	void parseStuID(int* stuID);

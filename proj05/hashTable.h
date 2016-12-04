@@ -2,6 +2,7 @@
 #define _HASHTABLE_H
 
 #include <list>
+#include <vector>
 #include <string>
 #include <iostream>
 
@@ -21,7 +22,8 @@ public:
 
 	//ostream operator, for some reason it must be inline...
 	friend std::ostream& operator<<(std::ostream& os, const HashElem& elem) {
-		os << "{" << elem._key << ", " << elem._value << "}";
+		os << elem._key;
+		//os << "{" << elem._key << ", " << elem._value << "}";
 		return os;
 	}
 };
@@ -35,7 +37,7 @@ private:
 	int size; //no of linked lists
 	std::list< HashElem<Key, Value> > * table; //Array of linked lists
 
-	hashElemIterator<Key, Value> getElem(Key k, Value * v = 0);
+	hashElemIterator<Key, Value> getElemByKey(Key k, Value * v = 0);
 public:
 	HashTable();
 	HashTable(int s);
@@ -46,9 +48,10 @@ public:
 	int getHashVal(std::string);
 	
 	int getSize();
+	std::vector<Value> getElemList(Key k);
 	bool checkElem(Key k, Value * v = 0);
 	bool setElem(Value& newVal, Key k, Value * v = 0);
-	bool removeElem(Key k, Value * v = 0);
+	bool removeElem(Key k);
 	void putElem(const Key&, const Value&);
 	void printTable();
 };
@@ -101,7 +104,7 @@ int HashTable<Key, Value>::getSize() {
 }
 
 template <typename Key, typename Value>
-hashElemIterator<Key, Value> HashTable<Key, Value>::getElem(Key k, Value * v) {
+hashElemIterator<Key, Value> HashTable<Key, Value>::getElemByKey(Key k, Value * v) {
 	hashElemIterator<Key, Value> itr;
 
 	int val = getHashVal(k);
@@ -116,8 +119,23 @@ hashElemIterator<Key, Value> HashTable<Key, Value>::getElem(Key k, Value * v) {
 }
 
 template <typename Key, typename Value>
+std::vector<Value> HashTable<Key, Value>::getElemList(Key k) {
+	hashElemIterator<Key, Value> itr;
+	std::vector<Value> values;
+
+	int val = getHashVal(k);
+	itr = table[val].begin();
+	while (itr != table[val].end()) {
+		if (k == itr->getKey())
+			values.push_back(itr->getValue());
+		itr++;
+	}
+	return values;
+}
+
+template <typename Key, typename Value>
 bool HashTable<Key, Value>::checkElem(Key k, Value * v) {
-	hashElemIterator<Key, Value> itr = getElem(k, v);
+	hashElemIterator<Key, Value> itr = getElemByKey(k, v);
 
 	int val = getHashVal(k);
 	return itr != table[val].end();
@@ -125,7 +143,7 @@ bool HashTable<Key, Value>::checkElem(Key k, Value * v) {
 
 template <typename Key, typename Value>
 bool HashTable<Key, Value>::setElem(Value& newVal, Key k, Value * v) {
-	hashElemIterator<Key, Value> itr = getElem(k, v);
+	hashElemIterator<Key, Value> itr = getElemByKey(k, v);
 
 	int val = getHashVal(k);
 	if (itr == table[val].end())
@@ -134,8 +152,8 @@ bool HashTable<Key, Value>::setElem(Value& newVal, Key k, Value * v) {
 }
 
 template <typename Key, typename Value>
-bool HashTable<Key, Value>::removeElem(Key k, Value * v) {
-	hashElemIterator<Key, Value> itr = getElem(k, v);
+bool HashTable<Key, Value>::removeElem(Key k) {
+	hashElemIterator<Key, Value> itr = getElemByKey(k);
 
 	int val = getHashVal(k);
 	if (itr == table[val].end())
@@ -152,10 +170,6 @@ void HashTable<Key, Value>::putElem(const Key& k, const Value& v) {
 	int val = getHashVal(k);
 	itr = table[val].begin();
 	while (itr != table[val].end() && k >= itr->getKey()) {
-		if (k == itr->getKey()) {
-			std::cout << "Error: Key already exist!" << std::endl;
-			return;
-		}
 		++itr;
 	}
 	table[val].insert(itr, elem);
