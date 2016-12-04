@@ -4,6 +4,7 @@
 #include <string>
 #include "hashTable.h"
 #include "registerEntities.h"
+#include "reportGenerator.h"
 #include "menu.h"
 
 #define STUD_BUCKET_NO 29
@@ -22,11 +23,16 @@ private:
 	//List
 	std::list<Record> records;
 
+	//Report generator
+	ReportGenerator* activeGenerator;
+
 	//Menus
 	Menu rootMenu;
 	Menu studentMenu;
 	Menu courseMenu;
 	Menu regCourseMenu;
+	Menu reportMenu;
+	
 public:
 	Register();
 	~Register();
@@ -46,6 +52,9 @@ public:
 	void recordDropCourse();
 	void recordModifyMark();
 	void recordQueryEntry();
+
+	void genStudentReport();
+	void genCourseReport();
 
 	//Parsers
 	void parseStuID(int* stuID);

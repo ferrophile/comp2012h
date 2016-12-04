@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <algorithm>
 
 template <typename Key, typename Value>
 class HashElem {
@@ -15,10 +16,11 @@ public:
 	HashElem();
 	HashElem(const Key&, const Value&);
 	~HashElem();
-	Key getKey();
-	Value getValue();
+	Key getKey() const;
+	Value getValue() const;
 	void setKey(const Key&);
 	void setValue(const Value&);
+	bool operator<(const HashElem&);
 
 	//ostream operator, for some reason it must be inline...
 	friend std::ostream& operator<<(std::ostream& os, const HashElem& elem) {
@@ -49,6 +51,7 @@ public:
 	
 	int getSize();
 	std::vector<Value> getElemList(Key k);
+	std::vector< HashElem<Key, Value> > getAllElem();
 	bool checkElem(Key k, Value * v = 0);
 	bool setElem(Value& newVal, Key k);
 	bool removeElemByKey(Key k);
@@ -135,6 +138,21 @@ std::vector<Value> HashTable<Key, Value>::getElemList(Key k) {
 }
 
 template <typename Key, typename Value>
+std::vector< HashElem<Key, Value> > HashTable<Key, Value>::getAllElem() {
+	hashElemIterator<Key, Value> itr;
+	std::vector< HashElem<Key, Value> > elemArray;
+
+	for (int i=0; i < size; i++) {
+		for (itr = table[i].begin(); itr != table[i].end(); itr++) {
+			elemArray.push_back(*itr);
+		}
+	}
+
+	std::sort(elemArray.begin(), elemArray.end());
+	return elemArray;
+}
+
+template <typename Key, typename Value>
 bool HashTable<Key, Value>::checkElem(Key k, Value * v) {
 	hashElemIterator<Key, Value> itr = getElemByKey(k, v);
 
@@ -218,12 +236,12 @@ template <typename Key, typename Value>
 HashElem<Key, Value>::~HashElem() {}
 
 template <typename Key, typename Value>
-Key HashElem<Key, Value>::getKey() {
+Key HashElem<Key, Value>::getKey() const {
 	return _key;
 }
 
 template <typename Key, typename Value>
-Value HashElem<Key, Value>::getValue() {
+Value HashElem<Key, Value>::getValue() const {
 	return _value;
 }
 
@@ -235,6 +253,11 @@ void HashElem<Key, Value>::setKey(const Key& k) {
 template <typename Key, typename Value>
 void HashElem<Key, Value>::setValue(const Value& v) {
 	_value = v;
+}
+
+template <typename Key, typename Value>
+bool HashElem<Key, Value>::operator<(const HashElem& elem) {
+	return _key < elem.getKey();
 }
 
 #endif

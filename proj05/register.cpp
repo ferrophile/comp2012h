@@ -5,16 +5,18 @@ Register::Register()
 	course(COR_BUCKET_NO),
 	studentFinder(STUD_BUCKET_NO),
 	courseFinder(COR_BUCKET_NO),
+	activeGenerator(0),
 	rootMenu("HKUST Course Registation System"),
 	studentMenu("Student Menu"),
 	courseMenu("Course Menu"),
-	regCourseMenu("Registration Menu")
+	regCourseMenu("Registration Menu"),
+	reportMenu("Report Generation Menu")
 	{
 	
 	rootMenu.addChild("Student Management", &studentMenu);
 	rootMenu.addChild("Course Management", &courseMenu);
 	rootMenu.addChild("Course Registration", &regCourseMenu);
-	rootMenu.addItem("Report Management", std::bind(&Register::foobar, this));
+	rootMenu.addChild("Report Management", &reportMenu);
 	rootMenu.addItem("File Management", std::bind(&Register::foobar, this));
 	rootMenu.addItem("Exit", std::bind(&Register::foobar, this));
 
@@ -35,6 +37,10 @@ Register::Register()
 	regCourseMenu.addItem("Modify Exam Mark", std::bind(&Register::recordModifyMark, this));
 	regCourseMenu.addItem("Query Registration", std::bind(&Register::recordQueryEntry, this));
 	regCourseMenu.addChild("Back to main menu", &rootMenu);
+
+	reportMenu.addItem("List all students information", std::bind(&Register::genStudentReport, this));
+	reportMenu.addItem("List all courses information", std::bind(&Register::genCourseReport, this));
+	reportMenu.addChild("Back to main menu", &rootMenu);
 
 	Menu::setActiveMenu(&rootMenu);
 }
@@ -381,6 +387,57 @@ void Register::recordQueryEntry() {
 	std::cout << "Registration record does not exist!" << std::endl;
 	std::cout << std::endl;
 	return;
+}
+
+void Register::genStudentReport() {
+	std::vector< HashElem<int, Student> > studArray = student.getAllElem();
+	std::vector< HashElem<int, Student> >::iterator itr;
+
+	activeGenerator = new ReportGenerator("Students.html", "List of all students");
+	activeGenerator->writeHtmlHeader();
+
+	std::vector<std::string> entry = {"Student ID", "Student Name", "Year", "Gender"};
+	activeGenerator->writeTableRow(entry, true);
+
+	for (itr = studArray.begin(); itr != studArray.end(); itr++) {
+		std::string key = std::to_string(itr->getKey());
+		Student value = itr->getValue();
+
+		entry.clear();
+		entry.push_back(key);
+		entry.push_back(value.getName());
+		entry.push_back(std::to_string(value.getYear()));
+		entry.push_back(value.getGender());
+		activeGenerator->writeTableRow(entry);
+	}
+
+	activeGenerator->writeHtmlFooter();
+	delete activeGenerator;
+}
+
+void Register::genCourseReport() {
+	std::vector< HashElem<std::string, Course> > corArray = course.getAllElem();
+	std::vector< HashElem<std::string, Course> >::iterator itr;
+
+	activeGenerator = new ReportGenerator("Courses.html", "List of all courses");
+	activeGenerator->writeHtmlHeader();
+
+	std::vector<std::string> entry = {"Course Code", "Course Name", "Credit"};
+	activeGenerator->writeTableRow(entry, true);
+
+	for (itr = corArray.begin(); itr != corArray.end(); itr++) {
+		std::string key = itr->getKey();
+		Course value = itr->getValue();
+
+		entry.clear();
+		entry.push_back(key);
+		entry.push_back(value.getName());
+		entry.push_back(std::to_string(value.getCredit()));
+		activeGenerator->writeTableRow(entry);
+	}
+
+	activeGenerator->writeHtmlFooter();
+	delete activeGenerator;
 }
 
 /*--Parsers, may move them to another file later--*/
