@@ -50,8 +50,9 @@ public:
 	int getSize();
 	std::vector<Value> getElemList(Key k);
 	bool checkElem(Key k, Value * v = 0);
-	bool setElem(Value& newVal, Key k, Value * v = 0);
-	bool removeElem(Key k);
+	bool setElem(Value& newVal, Key k);
+	bool removeElemByKey(Key k);
+	bool removeElemByVal(Key k, Value delVal);
 	void putElem(const Key&, const Value&);
 	void printTable();
 };
@@ -142,8 +143,8 @@ bool HashTable<Key, Value>::checkElem(Key k, Value * v) {
 }
 
 template <typename Key, typename Value>
-bool HashTable<Key, Value>::setElem(Value& newVal, Key k, Value * v) {
-	hashElemIterator<Key, Value> itr = getElemByKey(k, v);
+bool HashTable<Key, Value>::setElem(Value& newVal, Key k) {
+	hashElemIterator<Key, Value> itr = getElemByKey(k);
 
 	int val = getHashVal(k);
 	if (itr == table[val].end())
@@ -152,7 +153,7 @@ bool HashTable<Key, Value>::setElem(Value& newVal, Key k, Value * v) {
 }
 
 template <typename Key, typename Value>
-bool HashTable<Key, Value>::removeElem(Key k) {
+bool HashTable<Key, Value>::removeElemByKey(Key k) {
 	hashElemIterator<Key, Value> itr = getElemByKey(k);
 
 	int val = getHashVal(k);
@@ -160,6 +161,23 @@ bool HashTable<Key, Value>::removeElem(Key k) {
 		return false; 
 	table[val].erase(itr);
 	return true;
+}
+
+template <typename Key, typename Value>
+bool HashTable<Key, Value>::removeElemByVal(Key k, Value delVal) {
+	hashElemIterator<Key, Value> itr;
+	std::vector<Value> values;
+
+	int val = getHashVal(k);
+	itr = table[val].begin();
+	while (itr != table[val].end()) {
+		if (k == itr->getKey() && delVal == itr->getValue()) {
+			table[val].erase(itr);
+			break;
+		}
+		itr++;
+	}
+	return itr != table[val].end();
 }
 
 template <typename Key, typename Value>

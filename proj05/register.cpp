@@ -101,7 +101,7 @@ void Register::studentDeleteEntry() {
 	std::cout << "Enter the student ID: ";
 	parseStuID(&stuID);
 
-	if (!student.removeElem(stuID)) {
+	if (!student.removeElemByKey(stuID)) {
 		std::cout << "Student does not exist!" << std::endl;
 		std::cout << std::endl;
 		return;
@@ -188,7 +188,7 @@ void Register::courseDeleteEntry() {
 	std::cout << "Enter the course ID: ";
 	parseCourseID(&corID);
 
-	if (!course.removeElem(corID)) {
+	if (!course.removeElemByKey(corID)) {
 		std::cout << "Course does not exist!" << std::endl;
 		std::cout << std::endl;
 		return;
@@ -225,8 +225,21 @@ void Register::recordAddCourse() {
 
 	std::cout << "Enter the student ID: ";
 	parseStuID(&stuID);
+
+	if (!student.checkElem(stuID)) {
+		std::cout << "Student does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
 	std::cout << "Enter the course ID: ";
 	parseCourseID(&corID);
+
+	if (!course.checkElem(corID)) {
+		std::cout << "Course does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
 
 	Record record(stuID, corID);
 	itr = records.begin();
@@ -254,10 +267,36 @@ void Register::recordDropCourse() {
 	std::cout << "Enter the student ID: ";
 	parseStuID(&stuID);
 
-	std::vector<recordIterator> results = studentFinder.getElemList(stuID);
-	for (itr = results.begin(); itr != results.end(); ++itr) {
-		std::cout << (*itr)->getCorID() << std::endl;
+	if (!student.checkElem(stuID)) {
+		std::cout << "Student does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
 	}
+
+	std::cout << "Enter the course ID: ";
+	parseCourseID(&corID);
+
+	if (!course.checkElem(corID)) {
+		std::cout << "Course does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	std::vector<recordIterator> results = studentFinder.getElemList(stuID);
+	itr = results.begin();
+	while (itr != results.end()) {
+		if(corID == (*itr)->getCorID()) {
+			studentFinder.removeElemByVal(stuID, *itr);
+			std::cout << "Course sucessfully dropped" << std::endl;
+			std::cout << std::endl;
+			return;
+		}
+		itr++;
+	}
+
+	std::cout << "Registration record does not exist!" << std::endl;
+	std::cout << std::endl;
+	return;
 }
 
 /*--Parsers, may move them to another file later--*/
