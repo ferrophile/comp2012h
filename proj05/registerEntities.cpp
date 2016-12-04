@@ -110,7 +110,7 @@ bool Course::setCredit(std::string credit) {
 	} catch (...) {
 		return false;
 	}
-	setCredit(temp);
+	return setCredit(temp);
 }
 
 std::string Course::getName() const {
@@ -160,6 +160,16 @@ bool Record::setExamMark(int examMark) {
 	return true;
 }
 
+bool Record::setExamMark(std::string examMark) {
+	int temp = 0;
+	try {
+		temp = std::stoi(examMark);
+	} catch (...) {
+		return false;
+	}
+	return setExamMark(temp);
+}
+
 int Record::getStuID() const {
 	return _stuID;
 }
@@ -170,6 +180,12 @@ std::string Record::getCorID() const {
 
 int Record::getExamMark() const {
 	return _examMark;
+}
+
+std::string Record::showExamMark() const {
+	if (_examMark == -1)
+		return "N/A";
+	return std::to_string(_examMark);
 }
 
 bool Record::operator==(const Record& r) {

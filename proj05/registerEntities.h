@@ -63,10 +63,13 @@ public:
 	void setStuID(int);
 	void setCorID(std::string);
 	bool setExamMark(int);
+	bool setExamMark(std::string);
 
 	int getStuID() const;
 	std::string getCorID() const;
 	int getExamMark() const;
+
+	std::string showExamMark() const;
 
 	bool operator==(const Record&);
 	bool operator!=(const Record&);

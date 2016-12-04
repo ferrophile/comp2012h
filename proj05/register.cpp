@@ -22,18 +22,18 @@ Register::Register()
 	studentMenu.addItem("Modify Student Record", std::bind(&Register::studentModifyEntry, this));
 	studentMenu.addItem("Delete Student Record", std::bind(&Register::studentDeleteEntry, this));
 	studentMenu.addItem("Query Student Record", std::bind(&Register::studentQueryEntry, this));
-	studentMenu.addItem("Debug", std::bind(&Register::debug, this));
 	studentMenu.addChild("Back to main menu", &rootMenu);
 
 	courseMenu.addItem("Insert Course Record", std::bind(&Register::courseInsertEntry, this));
 	courseMenu.addItem("Modify Course Record", std::bind(&Register::courseModifyEntry, this));
 	courseMenu.addItem("Delete Course Record", std::bind(&Register::courseDeleteEntry, this));
 	courseMenu.addItem("Query Course Record", std::bind(&Register::courseQueryEntry, this));
-	courseMenu.addItem("Debug", std::bind(&Register::debug, this));
 	courseMenu.addChild("Back to main menu", &rootMenu);
 
 	regCourseMenu.addItem("Add Course", std::bind(&Register::recordAddCourse, this));
 	regCourseMenu.addItem("Drop Course", std::bind(&Register::recordDropCourse, this));
+	regCourseMenu.addItem("Modify Exam Mark", std::bind(&Register::recordModifyMark, this));
+	regCourseMenu.addItem("Query Registration", std::bind(&Register::recordQueryEntry, this));
 	regCourseMenu.addChild("Back to main menu", &rootMenu);
 
 	Menu::setActiveMenu(&rootMenu);
@@ -287,7 +287,91 @@ void Register::recordDropCourse() {
 	while (itr != results.end()) {
 		if(corID == (*itr)->getCorID()) {
 			studentFinder.removeElemByVal(stuID, *itr);
-			std::cout << "Course sucessfully dropped" << std::endl;
+			std::cout << "Course successfully dropped" << std::endl;
+			std::cout << std::endl;
+			return;
+		}
+		itr++;
+	}
+
+	std::cout << "Registration record does not exist!" << std::endl;
+	std::cout << std::endl;
+	return;
+}
+
+void Register::recordModifyMark() {
+	int stuID = 0;
+	std::string corID;
+	std::vector<recordIterator>::iterator itr;
+
+	std::cout << "Enter the student ID: ";
+	parseStuID(&stuID);
+
+	if (!student.checkElem(stuID)) {
+		std::cout << "Student does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	std::cout << "Enter the course ID: ";
+	parseCourseID(&corID);
+
+	if (!course.checkElem(corID)) {
+		std::cout << "Course does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	std::vector<recordIterator> results = studentFinder.getElemList(stuID);
+	itr = results.begin();
+	while (itr != results.end()) {
+		if(corID == (*itr)->getCorID()) {
+			std::cout << "Enter the exam mark [" << (*itr)->showExamMark() << "]: ";
+
+			parseExamMark(*itr);
+			std::cout << "Exam mark successfully modified" << std::endl;
+			std::cout << std::endl;
+			return;
+		}
+		itr++;
+	}
+
+	std::cout << "Registration record does not exist!" << std::endl;
+	std::cout << std::endl;
+	return;
+}
+
+void Register::recordQueryEntry() {
+	int stuID = 0;
+	std::string corID;
+	std::vector<recordIterator>::iterator itr;
+
+	std::cout << "Enter the student ID: ";
+	parseStuID(&stuID);
+
+	if (!student.checkElem(stuID)) {
+		std::cout << "Student does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	std::cout << "Enter the course ID: ";
+	parseCourseID(&corID);
+
+	if (!course.checkElem(corID)) {
+		std::cout << "Course does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	std::vector<recordIterator> results = studentFinder.getElemList(stuID);
+	itr = results.begin();
+	while (itr != results.end()) {
+		if(corID == (*itr)->getCorID()) {
+			std::cout << std::endl;
+			std::cout << "Student ID:\t" << stuID << std::endl;
+			std::cout << "Course Code:\t" << corID << std::endl;
+			std::cout << "Exam Mark:\t" << (*itr)->showExamMark() << std::endl;
 			std::cout << std::endl;
 			return;
 		}
@@ -378,6 +462,17 @@ void Register::parseCourseCredit(Course& c) {
 	} while (!state);
 }
 
+void Register::parseExamMark(recordIterator& r) {
+	std::string input;
+	bool state = false;
+	do {
+		std::getline(std::cin, input);
+		state = r->setExamMark(input);
+		if (!state)
+			std::cout << "Invalid input, enter again [exam mark]: ";
+	} while (!state);
+}
+
 bool Register::validateStuID(std::string input, int* res) {
 	int temp = 0;
 
@@ -418,6 +513,7 @@ void Register::debug() {
 	studentFinder.printTable();
 	std::cout << std::endl;
 }
+
 void Register::foobar() {
 	std::cout << "Hello World!" << std::endl;
 	std::cout << std::endl;

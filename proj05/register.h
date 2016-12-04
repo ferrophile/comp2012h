@@ -44,6 +44,8 @@ public:
 
 	void recordAddCourse();
 	void recordDropCourse();
+	void recordModifyMark();
+	void recordQueryEntry();
 
 	//Parsers
 	void parseStuID(int* stuID);
@@ -54,6 +56,8 @@ public:
 	void parseCourseID(std::string* courseID);
 	void parseCourseName(Course& c);
 	void parseCourseCredit(Course& c);
+
+	void parseExamMark(recordIterator& r);
 
 	//Validators
 	bool validateStuID(std::string input, int* res);
