@@ -2,6 +2,8 @@
 
 Menu* Menu::activeMenu = 0;
 
+bool Menu::running = true;
+
 Menu::Menu() : size(0), title("") {}
 
 Menu::Menu(std::string t) : size(0), title(t) {}
@@ -37,12 +39,22 @@ void Menu::show() {
 		count++;
 	}
 
-	std::cout << "Select your option [1-" << size << "]: ";
-	//std::cin >> option;
-	std::getline(std::cin, input);
-	option = std::stoi(input);
-	std::cout << std::endl;
+	std::cout << "Select your option (1-" << size << "): ";
+	bool state = false;
 
+	do {
+		std::getline(std::cin, input);
+		try {
+			option = std::stoi(input);
+		} catch (...) {
+			state = false;
+		}
+		state = (option > 0 && option <= size);
+		if (!state)
+			std::cout << "Invalid input, input again: ";
+	} while (!state);
+
+	std::cout << std::endl;
 	items[--option].action();
 }
 
@@ -52,4 +64,12 @@ void Menu::setActiveMenu(Menu* m) {
 
 void Menu::showActiveMenu() {
 	activeMenu->show();
+}
+
+void Menu::exitMenu() {
+	Menu::running = false;
+}
+
+bool Menu::isRunning() {
+	return Menu::running;
 }

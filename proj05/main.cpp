@@ -5,7 +5,7 @@
 int main(int argc, char** argv) {
 	Register r;
 	
-	while(true) {
+	while(Menu::isRunning()) {
 		Menu::showActiveMenu();
 	}
 

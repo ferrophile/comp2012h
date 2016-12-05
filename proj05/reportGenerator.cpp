@@ -20,6 +20,11 @@ bool ReportGenerator::isFileOpen() {
 	return file.is_open();
 }
 
+void ReportGenerator::writeString(std::string str) {
+	if (!isFileOpen()) return;
+	file << str;
+}
+
 void ReportGenerator::writeHtmlHeader() {
 	if (!isFileOpen()) return;
 	std::string header = "\
@@ -37,7 +42,6 @@ void ReportGenerator::writeHtmlHeader() {
 	}
 	header += "\
 <p>\n\
-<table cellSpacing=1 cellPadding=4 border=1>\n\
 ";
 	file << header;
 }
@@ -45,11 +49,22 @@ void ReportGenerator::writeHtmlHeader() {
 void ReportGenerator::writeHtmlFooter() {
 	if (!isFileOpen()) return;
 	std::string footer = "\
-</table>\n\
 </p>\n\
 </body>\n\
 </html>\n\
 ";
+	file << footer;
+}
+
+void ReportGenerator::writeTableHeader() {
+	if (!isFileOpen()) return;
+	std::string header = "<table cellSpacing=1 cellPadding=4 border=1>\n";
+	file << header;
+}
+
+void ReportGenerator::writeTableFooter() {
+	if (!isFileOpen()) return;
+	std::string footer = "</table>\n";
 	file << footer;
 }
 

@@ -19,8 +19,11 @@ public:
 	~ReportGenerator();
 
 	bool isFileOpen();
+	void writeString(std::string);
 	void writeHtmlHeader();
 	void writeHtmlFooter();
+	void writeTableHeader();
+	void writeTableFooter();
 	void writeTableRow(std::vector<std::string>, bool isHeader = false);
 };
 

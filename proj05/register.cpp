@@ -21,7 +21,7 @@ Register::Register()
 	rootMenu.addChild("Course Registration", &regCourseMenu);
 	rootMenu.addChild("Report Management", &reportMenu);
 	rootMenu.addChild("File Management", &fileMenu);
-	rootMenu.addItem("Exit", std::bind(&Register::debug, this));
+	rootMenu.addItem("Exit", Menu::exitMenu);
 
 	studentMenu.addItem("Insert Student Record", std::bind(&Register::studentInsertEntry, this));
 	studentMenu.addItem("Modify Student Record", std::bind(&Register::studentModifyEntry, this));
@@ -124,6 +124,13 @@ void Register::studentDeleteEntry() {
 		return;
 	}
 
+	std::vector<recordIterator> results = studentFinder.getElemList(stuID);
+	if (results.size() != 0) {
+		std::cout << "Student has registered courses, cannot delete!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
 	std::cout << "Deletion of student record successful" << std::endl;
 	std::cout << std::endl;
 }
@@ -207,6 +214,13 @@ void Register::courseDeleteEntry() {
 
 	if (!course.removeElemByKey(corID)) {
 		std::cout << "Course does not exist!" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	std::vector<recordIterator> results = courseFinder.getElemList(corID);
+	if (results.size() != 0) {
+		std::cout << "Course has been registered by students, cannot delete!" << std::endl;
 		std::cout << std::endl;
 		return;
 	}
@@ -405,19 +419,25 @@ void Register::genStudentReport() {
 	activeGenerator = new ReportGenerator("Students.html", "List of all students");
 	activeGenerator->writeHtmlHeader();
 
-	std::vector<std::string> entry = {"Student ID", "Student Name", "Year", "Gender"};
-	activeGenerator->writeTableRow(entry, true);
+	if (studArray.size() == 0) {
+		activeGenerator->writeString("No students found");
+	} else {
+		activeGenerator->writeTableHeader();
+		std::vector<std::string> entry = {"Student ID", "Student Name", "Year", "Gender"};
+		activeGenerator->writeTableRow(entry, true);
 
-	for (itr = studArray.begin(); itr != studArray.end(); itr++) {
-		std::string key = std::to_string(itr->getKey());
-		Student value = itr->getValue();
+		for (itr = studArray.begin(); itr != studArray.end(); itr++) {
+			std::string key = std::to_string(itr->getKey());
+			Student value = itr->getValue();
 
-		entry.clear();
-		entry.push_back(key);
-		entry.push_back(value.getName());
-		entry.push_back(std::to_string(value.getYear()));
-		entry.push_back(value.getGender());
-		activeGenerator->writeTableRow(entry);
+			entry.clear();
+			entry.push_back(key);
+			entry.push_back(value.getName());
+			entry.push_back(std::to_string(value.getYear()));
+			entry.push_back(value.getGender());
+			activeGenerator->writeTableRow(entry);
+		}
+		activeGenerator->writeTableFooter();
 	}
 
 	activeGenerator->writeHtmlFooter();
@@ -433,18 +453,24 @@ void Register::genCourseReport() {
 	activeGenerator = new ReportGenerator("Courses.html", "List of all courses");
 	activeGenerator->writeHtmlHeader();
 
-	std::vector<std::string> entry = {"Course Code", "Course Name", "Credit"};
-	activeGenerator->writeTableRow(entry, true);
+	if (corArray.size() == 0) {
+		activeGenerator->writeString("No courses found");
+	} else {
+		activeGenerator->writeTableHeader();
+		std::vector<std::string> entry = {"Course Code", "Course Name", "Credit"};
+		activeGenerator->writeTableRow(entry, true);
 
-	for (itr = corArray.begin(); itr != corArray.end(); itr++) {
-		std::string key = itr->getKey();
-		Course value = itr->getValue();
+		for (itr = corArray.begin(); itr != corArray.end(); itr++) {
+			std::string key = itr->getKey();
+			Course value = itr->getValue();
 
-		entry.clear();
-		entry.push_back(key);
-		entry.push_back(value.getName());
-		entry.push_back(std::to_string(value.getCredit()));
-		activeGenerator->writeTableRow(entry);
+			entry.clear();
+			entry.push_back(key);
+			entry.push_back(value.getName());
+			entry.push_back(std::to_string(value.getCredit()));
+			activeGenerator->writeTableRow(entry);
+		}
+		activeGenerator->writeTableFooter();
 	}
 
 	activeGenerator->writeHtmlFooter();
@@ -473,27 +499,34 @@ void Register::genStudentCourseReport() {
 	activeGenerator = new ReportGenerator(filename, "Course Records for Student", stud.getName(), std::to_string(stuID));
 	activeGenerator->writeHtmlHeader();
 
-	std::vector<std::string> entry = {"Course Code", "Course Name", "Credit", "Exam Mark"};
-	activeGenerator->writeTableRow(entry, true);
-
 	std::vector<recordIterator> results = studentFinder.getElemList(stuID);
 	for (itr = results.begin(); itr != results.end(); itr++) {
 		recordList.push_back(**itr);
 	}
 
-	std::sort(recordList.begin(), recordList.end());
+	if (results.size() == 0) {
+		activeGenerator->writeString("Student hasn't taken any courses");
+	} else {
+		activeGenerator->writeTableHeader();
+		std::vector<std::string> entry = {"Course Code", "Course Name", "Credit", "Exam Mark"};
+		activeGenerator->writeTableRow(entry, true);
 
-	for (recItr = recordList.begin(); recItr != recordList.end(); recItr++) {
-		std::string corID = recItr->getCorID();
-		Course cor;
-		course.checkElem(corID, &cor);
 
-		entry.clear();
-		entry.push_back(corID);
-		entry.push_back(cor.getName());
-		entry.push_back(std::to_string(cor.getCredit()));
-		entry.push_back(recItr->showExamMark());
-		activeGenerator->writeTableRow(entry);
+		std::sort(recordList.begin(), recordList.end());
+
+		for (recItr = recordList.begin(); recItr != recordList.end(); recItr++) {
+			std::string corID = recItr->getCorID();
+			Course cor;
+			course.checkElem(corID, &cor);
+
+			entry.clear();
+			entry.push_back(corID);
+			entry.push_back(cor.getName());
+			entry.push_back(std::to_string(cor.getCredit()));
+			entry.push_back(recItr->showExamMark());
+			activeGenerator->writeTableRow(entry);
+		}
+		activeGenerator->writeTableFooter();
 	}
 
 	activeGenerator->writeHtmlFooter();
@@ -522,28 +555,34 @@ void Register::genCourseStudentReport() {
 	activeGenerator = new ReportGenerator(filename, "Student Records for Course", cor.getName(), corID);
 	activeGenerator->writeHtmlHeader();
 
-	std::vector<std::string> entry = {"Student ID", "Student Name", "Year", "Gender", "Exam Mark"};
-	activeGenerator->writeTableRow(entry, true);
-
 	std::vector<recordIterator> results = courseFinder.getElemList(corID);
 	for (itr = results.begin(); itr != results.end(); itr++) {
 		recordList.push_back(**itr);
 	}
 
-	std::sort(recordList.begin(), recordList.end());
+	if (results.size() == 0) {
+		activeGenerator->writeString("No student takes this course");
+	} else {
+		activeGenerator->writeTableHeader();
+		std::vector<std::string> entry = {"Student ID", "Student Name", "Year", "Gender", "Exam Mark"};
+		activeGenerator->writeTableRow(entry, true);
 
-	for (recItr = recordList.begin(); recItr != recordList.end(); recItr++) {
-		int stuID = recItr->getStuID();
-		Student stud;
-		student.checkElem(stuID, &stud);
+		std::sort(recordList.begin(), recordList.end());
 
-		entry.clear();
-		entry.push_back(std::to_string(stuID));
-		entry.push_back(stud.getName());
-		entry.push_back(std::to_string(stud.getYear()));
-		entry.push_back(stud.getGender());
-		entry.push_back(recItr->showExamMark());
-		activeGenerator->writeTableRow(entry);
+		for (recItr = recordList.begin(); recItr != recordList.end(); recItr++) {
+			int stuID = recItr->getStuID();
+			Student stud;
+			student.checkElem(stuID, &stud);
+
+			entry.clear();
+			entry.push_back(std::to_string(stuID));
+			entry.push_back(stud.getName());
+			entry.push_back(std::to_string(stud.getYear()));
+			entry.push_back(stud.getGender());
+			entry.push_back(recItr->showExamMark());
+			activeGenerator->writeTableRow(entry);
+		}
+		activeGenerator->writeTableFooter();
 	}
 
 	activeGenerator->writeHtmlFooter();

@@ -16,6 +16,7 @@ private:
 	std::string title;
 	std::vector<struct MenuItem> items;
 	static Menu* activeMenu;
+	static bool running;
 public:
 	Menu();
 	Menu(std::string t);
@@ -27,6 +28,8 @@ public:
 
 	static void setActiveMenu(Menu* m);
 	static void showActiveMenu();
+	static void exitMenu();
+	static bool isRunning();
 };
 
 #endif
