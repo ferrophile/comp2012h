@@ -59,6 +59,7 @@ public:
 	bool removeElemByVal(Key k, Value delVal);
 	void putElem(const Key&, const Value&);
 	void printTable();
+	void clearTable();
 	HashTable<Key, Value>& operator=(const HashTable<Key, Value>&);
 };
 
@@ -228,6 +229,13 @@ void HashTable<Key, Value>::printTable() {
 		for (itr = table[i].begin(); itr != table[i].end(); ++itr)
 			std::cout << *itr << " <- ";
 		std::cout << "NULL" << std::endl;
+	}
+}
+
+template <typename Key, typename Value>
+void HashTable<Key, Value>::clearTable() {
+	for (int i=0; i < size; i++) {
+		table[i].clear();
 	}
 }
 

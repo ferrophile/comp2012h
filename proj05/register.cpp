@@ -477,7 +477,6 @@ void Register::genStudentCourseReport() {
 	activeGenerator->writeTableRow(entry, true);
 
 	std::vector<recordIterator> results = studentFinder.getElemList(stuID);
-
 	for (itr = results.begin(); itr != results.end(); itr++) {
 		recordList.push_back(**itr);
 	}
@@ -513,7 +512,7 @@ void Register::genCourseStudentReport() {
 	std::cout << "Enter the course ID: ";
 	parseCourseID(&corID);
 
-	if (!course.checkElem(corID)) {
+	if (!course.checkElem(corID, &cor)) {
 		std::cout << "Course does not exist!" << std::endl;
 		std::cout << std::endl;
 		return;
@@ -649,8 +648,6 @@ void Register::loadDatabase() {
 	int i;
 	HashTable<int, Student> studentBuffer(STUD_BUCKET_NO);
 	HashTable<std::string, Course> courseBuffer(COR_BUCKET_NO);
-	HashTable<int, recordIterator> studentFinderBuffer(STUD_BUCKET_NO);
-	HashTable<std::string, recordIterator> courseFinderBuffer(COR_BUCKET_NO);
 	recordsBuffer = new std::list<Record>;
 	recordIterator recItr;
 
@@ -684,7 +681,6 @@ void Register::loadDatabase() {
 			} else {
 				stud.setGender("M");
 			}
-			stud.setGender("M");
 			stud.setYear(intBuffer);
 
 			studentBuffer.putElem(stuID, stud);
@@ -742,8 +738,6 @@ void Register::loadDatabase() {
 				recItr++;
 			}
 			recItr = recordsBuffer->insert(recItr, rec);
-			studentFinderBuffer.putElem(stuID, recItr);
-			courseFinderBuffer.putElem(corID, recItr);
 		}
 
 	} catch (const char* msg) {
@@ -755,11 +749,16 @@ void Register::loadDatabase() {
 	student = studentBuffer;
 	course = courseBuffer;
 	records = recordsBuffer;
-	studentFinder = studentFinderBuffer;
-	courseFinder = courseFinderBuffer;
+
+	studentFinder.clearTable();
+	courseFinder.clearTable();
+	for (recItr = records->begin(); recItr != records->end(); recItr++) {
+		studentFinder.putElem(recItr->getStuID(), recItr);
+		courseFinder.putElem(recItr->getCorID(), recItr);
+	}
 
 	delete activeFileManager;
-	delete recordsBuffer;
+	recordsBuffer = 0;
 	std::cout << "Database Loaded" << std::endl;
 	std::cout << std::endl;
 }
