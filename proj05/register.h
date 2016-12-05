@@ -5,10 +5,14 @@
 #include "hashTable.h"
 #include "registerEntities.h"
 #include "reportGenerator.h"
+#include "fileManager.h"
 #include "menu.h"
 
 #define STUD_BUCKET_NO 29
 #define COR_BUCKET_NO 17
+
+#define NEW_ENTRY_FLAG 0x80
+#define NEW_TABLE_FLAG 0x8A
 
 typedef std::list<Record>::iterator recordIterator;
 
@@ -23,8 +27,9 @@ private:
 	//List
 	std::list<Record> records;
 
-	//Report generator
+	//Utilities
 	ReportGenerator* activeGenerator;
+	FileManager* activeFileManager;
 
 	//Menus
 	Menu rootMenu;
@@ -32,6 +37,7 @@ private:
 	Menu courseMenu;
 	Menu regCourseMenu;
 	Menu reportMenu;
+	Menu fileMenu;
 	
 public:
 	Register();
@@ -57,6 +63,9 @@ public:
 	void genCourseReport();
 	void genStudentCourseReport();
 	void genCourseStudentReport();
+
+	void saveDatabase();
+	void loadDatabase();
 
 	//Parsers
 	void parseStuID(int* stuID);

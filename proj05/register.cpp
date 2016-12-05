@@ -6,18 +6,20 @@ Register::Register()
 	studentFinder(STUD_BUCKET_NO),
 	courseFinder(COR_BUCKET_NO),
 	activeGenerator(0),
+	activeFileManager(0),
 	rootMenu("HKUST Course Registation System"),
 	studentMenu("Student Menu"),
 	courseMenu("Course Menu"),
 	regCourseMenu("Registration Menu"),
-	reportMenu("Report Generation Menu")
+	reportMenu("Report Generation Menu"),
+	fileMenu("File Menu")
 	{
 	
 	rootMenu.addChild("Student Management", &studentMenu);
 	rootMenu.addChild("Course Management", &courseMenu);
 	rootMenu.addChild("Course Registration", &regCourseMenu);
 	rootMenu.addChild("Report Management", &reportMenu);
-	rootMenu.addItem("File Management", std::bind(&Register::foobar, this));
+	rootMenu.addChild("File Management", &fileMenu);
 	rootMenu.addItem("Exit", std::bind(&Register::foobar, this));
 
 	studentMenu.addItem("Insert Student Record", std::bind(&Register::studentInsertEntry, this));
@@ -43,6 +45,10 @@ Register::Register()
 	reportMenu.addItem("List all courses of a student", std::bind(&Register::genStudentCourseReport, this));
 	reportMenu.addItem("List all students of a course", std::bind(&Register::genCourseStudentReport, this));
 	reportMenu.addChild("Back to main menu", &rootMenu);
+
+	fileMenu.addItem("Save Database", std::bind(&Register::saveDatabase, this));
+	fileMenu.addItem("Load Database", std::bind(&Register::loadDatabase, this));
+	fileMenu.addChild("Back to main menu", &rootMenu);
 
 	Menu::setActiveMenu(&rootMenu);
 }
@@ -540,6 +546,120 @@ void Register::genCourseStudentReport() {
 	activeGenerator->writeHtmlFooter();
 	delete activeGenerator;
 	std::cout << "Output successful" << std::endl;
+	std::cout << std::endl;
+}
+
+void Register::saveDatabase() {
+	std::vector< HashElem<int, Student> > studArray = student.getAllElem();
+	std::vector< HashElem<int, Student> >::iterator studItr;
+	std::vector< HashElem<std::string, Course> > corArray = course.getAllElem();
+	std::vector< HashElem<std::string, Course> >::iterator corItr;
+	Student stud;
+	Course cor;
+
+	std::string filename = "";
+	std::cout << "Enter file name: ";
+	std::getline(std::cin, filename);
+	activeFileManager = new FileManager(filename);
+	activeFileManager->openOutFile();
+	if (!(activeFileManager->isFileOpen())) {
+		std::cout << "Error: cannot open file" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	int temp, len;
+	
+	activeFileManager->writeInt(NEW_TABLE_FLAG);
+	for (studItr = studArray.begin(); studItr != studArray.end(); studItr++) {
+		stud = studItr->getValue();
+		temp = stud.getYear() * ((stud.getGender() == "F") ? 2 : 1);
+		len = stud.getName().length();
+
+		activeFileManager->writeInt(NEW_ENTRY_FLAG);
+		activeFileManager->writeString(std::to_string(studItr->getKey()));
+		activeFileManager->writeInt(len);
+		activeFileManager->writeString(stud.getName());
+		activeFileManager->writeInt(len);
+		activeFileManager->writeInt(temp);
+	}
+
+	activeFileManager->writeInt(NEW_TABLE_FLAG);
+	for (corItr = corArray.begin(); corItr != corArray.end(); corItr++) {
+		cor = corItr->getValue();
+		len = cor.getName().length();
+
+		activeFileManager->writeInt(NEW_ENTRY_FLAG);
+		activeFileManager->writeString(corItr->getKey());
+		activeFileManager->writeInt(len);
+		activeFileManager->writeString(cor.getName());
+		activeFileManager->writeInt(len);
+		activeFileManager->writeInt(cor.getCredit());
+	}
+
+	delete activeFileManager;
+	std::cout << "Database Saved" << std::endl;
+	std::cout << std::endl;
+}
+
+void Register::loadDatabase() {
+	std::string filename = "";
+	std::cout << "Enter file name: ";
+	std::getline(std::cin, filename);
+	activeFileManager = new FileManager(filename);
+	activeFileManager->openInFile();
+	if (!(activeFileManager->isFileOpen())) {
+		std::cout << "Error: cannot open file" << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	int entries = 0;
+	int i;
+	HashTable<int, Student> studentBuffer;
+	int stuID, intBuffer;
+	std::string strBuffer;
+	Student stud;
+
+	try {
+		//Student Table
+		activeFileManager->checkValue(NEW_TABLE_FLAG);
+		entries = activeFileManager->readNum();
+		for (i=0; i < entries; i++) {
+			activeFileManager->checkValue(NEW_ENTRY_FLAG);
+			try {
+				stuID = std::stoi(activeFileManager->readString(8));
+			} catch (...) {
+				throw "Load Error!";
+			}
+
+			intBuffer = activeFileManager->readNum();
+			strBuffer = activeFileManager->readString(intBuffer);
+			activeFileManager->checkValue(intBuffer);
+			stud.setName(strBuffer);
+
+			intBuffer = activeFileManager->readNum(8);
+			if (intBuffer > 4) {
+				intBuffer -= 4;
+				stud.setGender("F");
+			} else {
+				stud.setGender("M");
+			}
+			stud.setGender("M");
+			stud.setYear(intBuffer);
+
+			std::cout << stuID << " " << stud << std::endl;
+			//studentBuffer.putElem(stuID, stud);
+		}
+
+	} catch (const char* msg) {
+		std::cout << msg << std::endl;
+		std::cout << std::endl;
+		return;
+	}
+
+	delete activeFileManager;
+	std::cout << "Database Loaded" << std::endl;
 	std::cout << std::endl;
 }
 
