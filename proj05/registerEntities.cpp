@@ -160,6 +160,10 @@ bool Record::setExamMark(int examMark) {
 	return true;
 }
 
+void Record::setExamMarkNA() {
+	_examMark = -1;
+}
+
 bool Record::setExamMark(std::string examMark) {
 	int temp = 0;
 	try {

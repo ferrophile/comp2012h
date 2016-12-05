@@ -64,6 +64,7 @@ public:
 	void setCorID(std::string);
 	bool setExamMark(int);
 	bool setExamMark(std::string);
+	void setExamMarkNA();
 
 	int getStuID() const;
 	std::string getCorID() const;

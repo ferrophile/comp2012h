@@ -5,6 +5,7 @@ Register::Register()
 	course(COR_BUCKET_NO),
 	studentFinder(STUD_BUCKET_NO),
 	courseFinder(COR_BUCKET_NO),
+	records(new std::list<Record>),
 	activeGenerator(0),
 	activeFileManager(0),
 	rootMenu("HKUST Course Registation System"),
@@ -53,7 +54,9 @@ Register::Register()
 	Menu::setActiveMenu(&rootMenu);
 }
 
-Register::~Register() {}
+Register::~Register() {
+	delete records;
+}
 
 void Register::studentInsertEntry() {
 	int stuID = 0;
@@ -256,15 +259,15 @@ void Register::recordAddCourse() {
 	}
 
 	Record record(stuID, corID);
-	itr = records.begin();
-	while (itr != records.end() && record >= *itr) {
+	itr = records->begin();
+	while (itr != records->end() && record >= *itr) {
 		if (record == *itr) {
 			std::cout << "Course already registered!" << std::endl;
 			return;
 		}
 		itr++;
 	}
-	itr = records.insert(itr, record);
+	itr = records->insert(itr, record);
 
 	studentFinder.putElem(stuID, itr);
 	courseFinder.putElem(corID, itr);
@@ -301,7 +304,7 @@ void Register::recordDropCourse() {
 	while (itr != results.end()) {
 		if(corID == (*itr)->getCorID()) {
 			studentFinder.removeElemByVal(stuID, *itr);
-			records.erase(*itr);
+			records->erase(*itr);
 			std::cout << "Course successfully dropped" << std::endl;
 			std::cout << std::endl;
 			return;
@@ -474,6 +477,7 @@ void Register::genStudentCourseReport() {
 	activeGenerator->writeTableRow(entry, true);
 
 	std::vector<recordIterator> results = studentFinder.getElemList(stuID);
+
 	for (itr = results.begin(); itr != results.end(); itr++) {
 		recordList.push_back(**itr);
 	}
@@ -554,8 +558,10 @@ void Register::saveDatabase() {
 	std::vector< HashElem<int, Student> >::iterator studItr;
 	std::vector< HashElem<std::string, Course> > corArray = course.getAllElem();
 	std::vector< HashElem<std::string, Course> >::iterator corItr;
+	std::list<Record>::iterator recItr;
 	Student stud;
 	Course cor;
+	Record rec;
 
 	std::string filename = "";
 	std::cout << "Enter file name: ";
@@ -569,13 +575,14 @@ void Register::saveDatabase() {
 	}
 
 	int temp, len;
-	std::string corName;
+	std::string corCode;
 	
+	//Student Table
 	activeFileManager->writeInt(NEW_TABLE_FLAG);
 	activeFileManager->writeInt(studArray.size());
 	for (studItr = studArray.begin(); studItr != studArray.end(); studItr++) {
 		stud = studItr->getValue();
-		temp = stud.getYear() * ((stud.getGender() == "F") ? 2 : 1);
+		temp = stud.getYear() + ((stud.getGender() == "F") ? 4 : 0);
 		len = stud.getName().length();
 
 		activeFileManager->writeInt(NEW_ENTRY_FLAG);
@@ -586,6 +593,7 @@ void Register::saveDatabase() {
 		activeFileManager->writeInt(temp);
 	}
 
+	//Course Table
 	activeFileManager->writeInt(NEW_TABLE_FLAG);
 	activeFileManager->writeInt(corArray.size());
 	for (corItr = corArray.begin(); corItr != corArray.end(); corItr++) {
@@ -593,13 +601,31 @@ void Register::saveDatabase() {
 		len = cor.getName().length();
 
 		activeFileManager->writeInt(NEW_ENTRY_FLAG);
-		corName = corItr->getKey();
-		if (corName.length() == 8) corName += "#";
-		activeFileManager->writeString(corName);
+		corCode = corItr->getKey();
+		if (corCode.length() == 8) corCode += "#";
+		activeFileManager->writeString(corCode);
 		activeFileManager->writeInt(len);
 		activeFileManager->writeString(cor.getName());
 		activeFileManager->writeInt(len);
 		activeFileManager->writeInt(cor.getCredit());
+	}
+
+	//CourseSelection Table
+	activeFileManager->writeInt(NEW_TABLE_FLAG);
+	activeFileManager->writeInt(records->size());
+	for (recItr = records->begin(); recItr != records->end(); recItr++) {
+		rec = *recItr;
+
+		activeFileManager->writeInt(NEW_ENTRY_FLAG);
+		activeFileManager->writeString(std::to_string(rec.getStuID()));
+		corCode = rec.getCorID();
+		if (corCode.length() == 8) corCode += "#";
+		activeFileManager->writeString(corCode);
+		temp = rec.getExamMark();
+		if (temp == -1)
+			activeFileManager->writeInt(NO_MARK_FLAG);
+		else
+			activeFileManager->writeInt(temp);
 	}
 
 	delete activeFileManager;
@@ -623,10 +649,16 @@ void Register::loadDatabase() {
 	int i;
 	HashTable<int, Student> studentBuffer(STUD_BUCKET_NO);
 	HashTable<std::string, Course> courseBuffer(COR_BUCKET_NO);
+	HashTable<int, recordIterator> studentFinderBuffer(STUD_BUCKET_NO);
+	HashTable<std::string, recordIterator> courseFinderBuffer(COR_BUCKET_NO);
+	recordsBuffer = new std::list<Record>;
+	recordIterator recItr;
+
 	int stuID, intBuffer;
 	std::string corID, strBuffer;
 	Student stud;
 	Course cor;
+	Record rec;
 
 	try {
 		//Student Table
@@ -677,15 +709,57 @@ void Register::loadDatabase() {
 			courseBuffer.putElem(corID, cor);
 		}
 
+		//CourseSelection Table
+		activeFileManager->checkValue(NEW_TABLE_FLAG);
+		entries = activeFileManager->readNum();
+		for (i=0; i < entries; i++) {
+			activeFileManager->checkValue(NEW_ENTRY_FLAG);
+
+			try {
+				stuID = std::stoi(activeFileManager->readString(8));
+			} catch (...) {
+				throw "Load Error!";
+			}
+			if (!studentBuffer.checkElem(stuID)) throw "Load Error!";
+			rec.setStuID(stuID);
+
+			corID = activeFileManager->readString(9);
+			if (corID[8] == '#') corID.pop_back();
+			if (!courseBuffer.checkElem(corID)) throw "Load Error!";
+			rec.setCorID(corID);
+
+			intBuffer = activeFileManager->readNum();
+			if (intBuffer == NO_MARK_FLAG)
+				rec.setExamMarkNA();
+			else if (intBuffer >= 0 && intBuffer <= 100)
+				rec.setExamMark(intBuffer);
+			else
+				throw "Load Error!";
+
+			recItr = recordsBuffer->begin();
+			while (recItr != recordsBuffer->end() && rec >= *recItr) {
+				if (rec == *recItr) throw "Load Error!";
+				recItr++;
+			}
+			recItr = recordsBuffer->insert(recItr, rec);
+			studentFinderBuffer.putElem(stuID, recItr);
+			courseFinderBuffer.putElem(corID, recItr);
+		}
+
 	} catch (const char* msg) {
 		std::cout << msg << std::endl;
 		std::cout << std::endl;
 		return;
 	}
 
-	delete activeFileManager;
 	student = studentBuffer;
 	course = courseBuffer;
+	records = recordsBuffer;
+	studentFinder = studentFinderBuffer;
+	courseFinder = courseFinderBuffer;
+
+	delete activeFileManager;
+	delete recordsBuffer;
 	std::cout << "Database Loaded" << std::endl;
 	std::cout << std::endl;
 }
@@ -815,9 +889,9 @@ bool Register::validateCourseID(std::string input, std::string* res) {
 }
 
 void Register::debug() {
-	student.printTable();
+	//student.printTable();
 	//course.printTable();
-	//studentFinder.printTable();
+	studentFinder.printTable();
 	std::cout << std::endl;
 }
 

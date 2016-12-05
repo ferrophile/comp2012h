@@ -13,6 +13,7 @@
 
 #define NEW_ENTRY_FLAG 0x80
 #define NEW_TABLE_FLAG 0x8A
+#define NO_MARK_FLAG 0x8B
 
 typedef std::list<Record>::iterator recordIterator;
 
@@ -25,7 +26,8 @@ private:
 	HashTable<std::string, recordIterator> courseFinder;
 
 	//List
-	std::list<Record> records;
+	std::list<Record>* records;
+	std::list<Record>* recordsBuffer;
 
 	//Utilities
 	ReportGenerator* activeGenerator;
