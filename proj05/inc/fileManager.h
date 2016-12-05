@@ -1,3 +1,9 @@
+/*
+ * COMP2012H Project 5
+ * Hong Wing PANG 20315504
+ * fileManager.h
+ */
+
 #ifndef _FILEMANAGER_H
 #define _FILEMANAGER_H
 

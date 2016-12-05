@@ -1,3 +1,9 @@
+/*
+ * COMP2012H Project 5
+ * Hong Wing PANG 20315504
+ * hashTable.h
+ */
+
 #ifndef _HASHTABLE_H
 #define _HASHTABLE_H
 

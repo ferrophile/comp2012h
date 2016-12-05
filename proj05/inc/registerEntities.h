@@ -1,3 +1,9 @@
+/*
+ * COMP2012H Project 5
+ * Hong Wing PANG 20315504
+ * registerEntities.h
+ */
+
 #ifndef _REGISTERENTITIES_H
 #define _REGISTERENTITIES_H
 

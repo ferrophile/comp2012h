@@ -1,3 +1,9 @@
+/*
+ * COMP2012H Project 5
+ * Hong Wing PANG 20315504
+ * reportGenerator.cpp
+ */
+
 #include "reportGenerator.h"
 
 ReportGenerator::ReportGenerator() {}

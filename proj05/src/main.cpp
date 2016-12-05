@@ -1,3 +1,9 @@
+/*
+ * COMP2012H Project 5
+ * Hong Wing PANG 20315504
+ * main.cpp
+ */
+
 #include <string>
 #include <iostream>
 #include "register.h"

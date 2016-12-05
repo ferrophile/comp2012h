@@ -1,5 +1,12 @@
+/*
+ * COMP2012H Project 5
+ * Hong Wing PANG 20315504
+ * register.cpp
+ */
+
 #include "register.h"
 
+//Constructor, initializes the data members
 Register::Register()
 :	student(STUD_BUCKET_NO), 
 	course(COR_BUCKET_NO),
@@ -16,6 +23,7 @@ Register::Register()
 	fileMenu("File Menu")
 	{
 	
+	//Set up menu
 	rootMenu.addChild("Student Management", &studentMenu);
 	rootMenu.addChild("Course Management", &courseMenu);
 	rootMenu.addChild("Course Registration", &regCourseMenu);
@@ -54,10 +62,16 @@ Register::Register()
 	Menu::setActiveMenu(&rootMenu);
 }
 
+//Destructor
 Register::~Register() {
 	delete records;
 }
 
+/*
+ *Student menu functions
+ */
+
+//Insert student entry to Student hash table
 void Register::studentInsertEntry() {
 	int stuID = 0;
 	Student stud;
@@ -86,6 +100,7 @@ void Register::studentInsertEntry() {
 	std::cout << std::endl;
 }
 
+//Modify student entry
 void Register::studentModifyEntry() {
 	int stuID = 0;
 	Student stud;
@@ -93,6 +108,7 @@ void Register::studentModifyEntry() {
 	std::cout << "Enter the student ID: ";
 	parseStuID(&stuID);
 
+	//check if student exists
 	if (!student.checkElem(stuID, &stud)) {
 		std::cout << "Student does not exist!" << std::endl;
 		std::cout << std::endl;
@@ -112,18 +128,21 @@ void Register::studentModifyEntry() {
 	std::cout << std::endl;
 }
 
+//Delete student entry
 void Register::studentDeleteEntry() {
 	int stuID = 0;
 
 	std::cout << "Enter the student ID: ";
 	parseStuID(&stuID);
 
+	//check if student exists
 	if (!student.removeElemByKey(stuID)) {
 		std::cout << "Student does not exist!" << std::endl;
 		std::cout << std::endl;
 		return;
 	}
 
+	//check if student is deletable
 	std::vector<recordIterator> results = studentFinder.getElemList(stuID);
 	if (results.size() != 0) {
 		std::cout << "Student has registered courses, cannot delete!" << std::endl;
@@ -135,6 +154,7 @@ void Register::studentDeleteEntry() {
 	std::cout << std::endl;
 }
 
+//Query student entry
 void Register::studentQueryEntry() {
 	int stuID = 0;
 
@@ -155,6 +175,11 @@ void Register::studentQueryEntry() {
 	std::cout << "Gender:\t" << stud.getGender() << std::endl;
 	std::cout << std::endl;
 }
+
+/*
+ * Course menu functions
+ * more or less same as the above
+ */
 
 void Register::courseInsertEntry() {
 	std::string corID;
@@ -248,6 +273,10 @@ void Register::courseQueryEntry() {
 	std::cout << "Credit:\t" << cor.getCredit() << std::endl;
 	std::cout << std::endl;
 }
+
+/*
+ * Registration menu functions
+ */
 
 void Register::recordAddCourse() {
 	int stuID = 0;
@@ -411,6 +440,10 @@ void Register::recordQueryEntry() {
 	std::cout << "Registration record does not exist!" << std::endl;
 	std::cout << std::endl;
 }
+
+/*
+ * Report generation menu functions
+ */
 
 void Register::genStudentReport() {
 	std::vector< HashElem<int, Student> > studArray = student.getAllElem();
@@ -590,6 +623,10 @@ void Register::genCourseStudentReport() {
 	std::cout << "Output successful" << std::endl;
 	std::cout << std::endl;
 }
+
+/*
+ * File menu functions
+ */
 
 void Register::saveDatabase() {
 	std::vector< HashElem<int, Student> > studArray = student.getAllElem();
@@ -802,7 +839,7 @@ void Register::loadDatabase() {
 	std::cout << std::endl;
 }
 
-/*--Parsers, may move them to another file later--*/
+/*--Parsing functions*/
 
 void Register::parseStuID(int* stuID) {
 	std::string input;
@@ -892,6 +929,10 @@ void Register::parseExamMark(recordIterator& r) {
 	} while (!state);
 }
 
+/*
+ * Validate the keys
+ */
+
 bool Register::validateStuID(std::string input, int* res) {
 	int temp = 0;
 
@@ -924,16 +965,4 @@ bool Register::validateCourseID(std::string input, std::string* res) {
 		return true;
 	}
 	return false;
-}
-
-void Register::debug() {
-	//student.printTable();
-	//course.printTable();
-	studentFinder.printTable();
-	std::cout << std::endl;
-}
-
-void Register::foobar() {
-	std::cout << "Hello World!" << std::endl;
-	std::cout << std::endl;
 }

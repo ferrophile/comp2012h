@@ -1,3 +1,9 @@
+/*
+ * COMP2012H Project 5
+ * Hong Wing PANG 20315504
+ * menu.h
+ */
+
 #ifndef _MENU_H
 #define _MENU_H
 

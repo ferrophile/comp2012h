@@ -1,3 +1,9 @@
+/*
+ * COMP2012H Project 5
+ * Hong Wing PANG 20315504
+ * register.h
+ */
+
 #ifndef _REGISTER_H
 #define _REGISTER_H
 

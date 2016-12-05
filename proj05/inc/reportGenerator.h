@@ -1,3 +1,9 @@
+/*
+ * COMP2012H Project 5
+ * Hong Wing PANG 20315504
+ * reportGenerator.h
+ */
+
 #ifndef _REPORTGENERATOR_H
 #define _REPORTGENERATOR_H
 
