@@ -43,7 +43,7 @@ private:
 public:
 	HashTable();
 	HashTable(int s);
-	//HashTable(const HashTable&);
+	HashTable(const HashTable<Key, Value>&);
 	~HashTable();
 	
 	int getHashVal(int);
@@ -52,12 +52,14 @@ public:
 	int getSize();
 	std::vector<Value> getElemList(Key k);
 	std::vector< HashElem<Key, Value> > getAllElem();
+	std::list< HashElem<Key, Value> > getBucket(int i) const;
 	bool checkElem(Key k, Value * v = 0);
 	bool setElem(Value& newVal, Key k);
 	bool removeElemByKey(Key k);
 	bool removeElemByVal(Key k, Value delVal);
 	void putElem(const Key&, const Value&);
 	void printTable();
+	HashTable<Key, Value>& operator=(const HashTable<Key, Value>&);
 };
 
 //HashTable class members
@@ -70,12 +72,12 @@ HashTable<Key, Value>::HashTable(int s) : size(s) {
 	table = new std::list< HashElem<Key, Value> >[size];
 }
 
-/*
 template <typename Key, typename Value>
-HashTable<Key, Value>::HashTable(const HashTable& ht) : size(ht.getSize()) {
-	//copy
+HashTable<Key, Value>::HashTable(const HashTable<Key, Value>& ht) : size(ht.getSize()) {
+	for (int i=0; i < size; i++) {
+		table[i] = getBucket(i);
+	}
 }
-*/
 
 template <typename Key, typename Value>
 HashTable<Key, Value>::~HashTable() {
@@ -153,6 +155,12 @@ std::vector< HashElem<Key, Value> > HashTable<Key, Value>::getAllElem() {
 }
 
 template <typename Key, typename Value>
+std::list< HashElem<Key, Value> > HashTable<Key, Value>::getBucket(int i) const {
+	if (i > size || i < 0) i = 0;
+	return table[i];
+}
+
+template <typename Key, typename Value>
 bool HashTable<Key, Value>::checkElem(Key k, Value * v) {
 	hashElemIterator<Key, Value> itr = getElemByKey(k, v);
 
@@ -220,6 +228,13 @@ void HashTable<Key, Value>::printTable() {
 		for (itr = table[i].begin(); itr != table[i].end(); ++itr)
 			std::cout << *itr << " <- ";
 		std::cout << "NULL" << std::endl;
+	}
+}
+
+template <typename Key, typename Value>
+HashTable<Key, Value>& HashTable<Key, Value>::operator=(const HashTable<Key, Value>& ht) {
+	for (int i=0; i < size; i++) {
+		table[i] = ht.getBucket(i);
 	}
 }
 
