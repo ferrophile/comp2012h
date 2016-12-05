@@ -55,6 +55,8 @@ public:
 
 	void genStudentReport();
 	void genCourseReport();
+	void genStudentCourseReport();
+	void genCourseStudentReport();
 
 	//Parsers
 	void parseStuID(int* stuID);

@@ -3,7 +3,12 @@
 ReportGenerator::ReportGenerator() {}
 
 ReportGenerator::ReportGenerator(std::string fn, std::string t)
-: title(t) {
+: title(t), name(""), key("") {
+	file.open(fn);
+}
+
+ReportGenerator::ReportGenerator(std::string fn, std::string t, std::string n, std::string k)
+: title(t), name(n), key(k) {
 	file.open(fn);
 }
 
@@ -24,7 +29,13 @@ void ReportGenerator::writeHtmlHeader() {
 </head>\n\
 <body>\n\
 <h1>HKUST Course Registration System</h1>\n\
-<h2>" + title + "</h2>\n\
+";
+	if (name != "" && key != "") {
+		header += ("<h2>" + title + ": " + name + " (" + key + ")</h2>\n");
+	} else {
+		header += ("<h2>" + title + "</h2>\n");
+	}
+	header += "\
 <p>\n\
 <table cellSpacing=1 cellPadding=4 border=1>\n\
 ";

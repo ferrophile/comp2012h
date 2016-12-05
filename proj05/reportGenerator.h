@@ -15,6 +15,7 @@ private:
 public:
 	ReportGenerator();
 	ReportGenerator(std::string, std::string);
+	ReportGenerator(std::string, std::string, std::string, std::string);
 	~ReportGenerator();
 
 	bool isFileOpen();
